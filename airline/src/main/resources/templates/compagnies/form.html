@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Compagnie Aérienne - Formulaire</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+    <h1 th:text="${compagnie.id} != null ? 'Modifier la Compagnie' : 'Nouvelle Compagnie'">Formulaire</h1>
+
+    <form th:action="@{/compagnies-aeriennes/save}" th:object="${compagnie}" method="post" class="mt-3">
+        <input type="hidden" th:field="*{id}"/>
+
+        <div class="mb-3">
+            <label for="nom" class="form-label">Nom</label>
+            <input id="nom" type="text" th:field="*{nom}" class="form-control" required/>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="codeIata" class="form-label">Code IATA</label>
+                <input id="codeIata" type="text" th:field="*{codeIata}" class="form-control"/>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="codeIcao" class="form-label">Code ICAO</label>
+                <input id="codeIcao" type="text" th:field="*{codeIcao}" class="form-control"/>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label for="pays" class="form-label">Pays</label>
+                <input id="pays" type="text" th:field="*{pays}" class="form-control"/>
+            </div>
+        </div>
+
+        <div class="form-check mb-3">
+            <input id="actif" type="checkbox" th:field="*{actif}" class="form-check-input"/>
+            <label for="actif" class="form-check-label">Actif</label>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a th:href="@{/compagnies-aeriennes}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
