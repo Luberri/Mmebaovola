@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postes Employés</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des Postes Employés</h1>
+    
+    <a th:href="@{/employe-postes/new}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus"></i> Nouveau Poste
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Employé</th>
+                <th>Poste</th>
+                <th>Date Début</th>
+                <th>Date Fin</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ep : ${employePostes}">
+                <td th:text="${ep.id}"></td>
+                <td th:text="${ep.employe?.nom + ' ' + ep.employe?.prenom}"></td>
+                <td th:text="${ep.poste?.libelle}"></td>
+                <td th:text="${#temporals.format(ep.dateDebut, 'dd/MM/yyyy')}"></td>
+                <td th:text="${ep.dateFin != null ? #temporals.format(ep.dateFin, 'dd/MM/yyyy') : 'En cours'}"></td>
+                <td>
+                    <a th:href="@{/employe-postes/edit/{id}(id=${ep.id})}" 
+                       class="btn btn-sm btn-warning">Modifier</a>
+                    <a th:href="@{/employe-postes/delete/{id}(id=${ep.id})}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce poste ?')">Supprimer</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(employePostes)}">
+                <td colspan="6" class="text-center">Aucun poste trouvé</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

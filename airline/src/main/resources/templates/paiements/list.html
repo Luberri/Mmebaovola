@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiements</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des Paiements</h1>
+    
+    <a th:href="@{/paiements/new}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus"></i> Nouveau Paiement
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Réservation</th>
+                <th>Montant</th>
+                <th>Mode</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="paiement : ${paiements}">
+                <td th:text="${paiement.id}"></td>
+                <td th:text="${'#' + paiement.reservation?.id + ' - ' + paiement.reservation?.passager?.nom}"></td>
+                <td th:text="${#numbers.formatDecimal(paiement.montant, 0, 2)} + ' €'"></td>
+                <td th:text="${paiement.modePaiement}"></td>
+                <td th:text="${#temporals.format(paiement.datePaiement, 'dd/MM/yyyy HH:mm')}"></td>
+                <td>
+                    <span th:if="${paiement.statut.name() == 'VALIDE'}" class="badge bg-success">Validé</span>
+                    <span th:if="${paiement.statut.name() == 'EN_ATTENTE'}" class="badge bg-warning">En attente</span>
+                    <span th:if="${paiement.statut.name() == 'REFUSE'}" class="badge bg-danger">Refusé</span>
+                    <span th:if="${paiement.statut.name() == 'REMBOURSE'}" class="badge bg-info">Remboursé</span>
+                </td>
+                <td>
+                    <a th:href="@{/paiements/edit/{id}(id=${paiement.id})}" 
+                       class="btn btn-sm btn-warning">Modifier</a>
+                    <a th:href="@{/paiements/delete/{id}(id=${paiement.id})}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce paiement ?')">Supprimer</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(paiements)}">
+                <td colspan="7" class="text-center">Aucun paiement trouvé</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

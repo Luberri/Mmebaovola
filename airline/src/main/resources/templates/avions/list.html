@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des Avions</h1>
+    
+    <a th:href="@{/avions/new}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus"></i> Nouvel Avion
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Modèle</th>
+                <th>Immatriculation</th>
+                <th>Capacité</th>
+                <th>État</th>
+                <th>Compagnie</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="avion : ${avions}">
+                <td th:text="${avion.id}"></td>
+                <td th:text="${avion.modele}"></td>
+                <td th:text="${avion.immatriculation}"></td>
+                <td th:text="${avion.capaciteTotale}"></td>
+                <td>
+                    <span th:if="${avion.etat.name() == 'EN_SERVICE'}" class="badge bg-success">En service</span>
+                    <span th:if="${avion.etat.name() == 'EN_MAINTENANCE'}" class="badge bg-warning">En maintenance</span>
+                    <span th:if="${avion.etat.name() == 'HORS_SERVICE'}" class="badge bg-danger">Hors service</span>
+                </td>
+                <td th:text="${avion.compagnie?.nom}"></td>
+                <td>
+                    <a th:href="@{/avions/edit/{id}(id=${avion.id})}" 
+                       class="btn btn-sm btn-warning">Modifier</a>
+                    <a th:href="@{/avions/delete/{id}(id=${avion.id})}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet avion ?')">Supprimer</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(avions)}">
+                <td colspan="7" class="text-center">Aucun avion trouvé</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

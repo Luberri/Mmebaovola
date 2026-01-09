@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4">Liste des Réservations</h1>
+    
+    <a th:href="@{/reservations/new}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus"></i> Nouvelle Réservation
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Passager</th>
+                <th>Vol</th>
+                <th>Classe</th>
+                <th>Siège</th>
+                <th>Prix</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reservation : ${reservations}">
+                <td th:text="${reservation.id}"></td>
+                <td th:text="${reservation.passager != null ? reservation.passager.nom + ' ' + reservation.passager.prenom : '-'}"></td>
+                <td th:text="${reservation.vol != null ? reservation.vol.numeroVol : '-'}"></td>
+                <td th:text="${reservation.classe != null ? reservation.classe.libelle : '-'}"></td>
+                <td th:text="${reservation.numeroSiege}"></td>
+                <td><span th:text="${reservation.prixPaye != null ? #numbers.formatDecimal(reservation.prixPaye, 0, 2) : '0.00'}"></span> €</td>
+                <td th:text="${reservation.dateReservation != null ? #temporals.format(reservation.dateReservation, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                <td>
+                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'CONFIRMEE'}" class="badge bg-success">Confirmée</span>
+                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'EN_ATTENTE'}" class="badge bg-warning">En attente</span>
+                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'ANNULEE'}" class="badge bg-danger">Annulée</span>
+                </td>
+                <td>
+                    <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" 
+                       class="btn btn-sm btn-warning">Modifier</a>
+                    <a th:href="@{/reservations/delete/{id}(id=${reservation.id})}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')">Supprimer</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(reservations)}">
+                <td colspan="9" class="text-center">Aucune réservation trouvée</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
