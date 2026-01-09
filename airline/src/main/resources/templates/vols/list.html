@@ -46,11 +46,17 @@
                     <span th:if="${vol.statut == 'ANNULE'}" class="badge bg-danger">Annulé</span>
                 </td>
                 <td>
-                    <a th:href="@{/vols/edit/{id}(id=${vol.id})}" 
-                       class="btn btn-sm btn-warning">Modifier</a>
-                    <a th:href="@{/vols/delete/{id}(id=${vol.id})}" 
-                       class="btn btn-sm btn-danger"
-                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce vol ?')">Supprimer</a>
+                    <div class="btn-group" role="group">
+                        <a th:href="@{/tarifs/new(volId=${vol.id})}" 
+                           class="btn btn-sm btn-success" title="Ajouter tarif">
+                            <i class="bi bi-currency-euro"></i> Tarif
+                        </a>
+                        <a th:href="@{/vols/edit/{id}(id=${vol.id})}" 
+                           class="btn btn-sm btn-warning">Modifier</a>
+                        <a th:href="@{/vols/delete/{id}(id=${vol.id})}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce vol ?')">Supprimer</a>
+                    </div>
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(vols)}">

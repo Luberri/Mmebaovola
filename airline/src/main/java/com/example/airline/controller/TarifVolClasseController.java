@@ -1,6 +1,7 @@
 package com.example.airline.controller;
 
 import com.example.airline.model.TarifVolClasse;
+import com.example.airline.model.Vol;
 import com.example.airline.service.TarifVolClasseService;
 import com.example.airline.service.VolService;
 import com.example.airline.service.ClasseVoyageService;
@@ -31,8 +32,15 @@ public class TarifVolClasseController {
     }
 
     @GetMapping("/new")
-    public String createForm(Model model) {
-        model.addAttribute("tarif", new TarifVolClasse());
+    public String createForm(@RequestParam(required = false) Long volId, Model model) {
+        TarifVolClasse tarif = new TarifVolClasse();
+        
+        // Pré-sélectionner le vol si volId est fourni
+        if (volId != null) {
+            volService.findById(volId).ifPresent(tarif::setVol);
+        }
+        
+        model.addAttribute("tarif", tarif);
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());
         return "tarifs/form";

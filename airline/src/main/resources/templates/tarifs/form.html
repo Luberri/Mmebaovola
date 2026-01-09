@@ -19,8 +19,9 @@
                 <select class="form-select" id="vol" name="vol.id" required>
                     <option value="">-- Sélectionner --</option>
                     <option th:each="v : ${vols}" th:value="${v.id}" 
+                            th:data-capacite="${v.avion != null ? v.avion.capaciteTotale : 0}"
                             th:selected="${tarif.vol != null and tarif.vol.id == v.id}"
-                            th:text="${v.numeroVol}"></option>
+                            th:text="${v.numeroVol + ' (' + (v.avion != null ? v.avion.modele : 'N/A') + ')'}"></option>
                 </select>
             </div>
             
@@ -45,6 +46,7 @@
                 <label for="placesDisponibles" class="form-label">Places Disponibles</label>
                 <input type="number" class="form-control" id="placesDisponibles" 
                        th:field="*{placesDisponibles}" required>
+                <small class="text-muted">Capacité de l'avion: <span id="capaciteAvion">-</span></small>
             </div>
         </div>
         
@@ -52,6 +54,46 @@
         <a th:href="@{/tarifs}" class="btn btn-secondary">Annuler</a>
     </form>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const volSelect = document.getElementById('vol');
+        const placesInput = document.getElementById('placesDisponibles');
+        const capaciteSpan = document.getElementById('capaciteAvion');
+        
+        // Fonction pour mettre à jour les places disponibles
+        function updatePlacesDisponibles() {
+            const selectedOption = volSelect.options[volSelect.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                const capacite = selectedOption.getAttribute('data-capacite');
+                capaciteSpan.textContent = capacite;
+                
+                // Seulement si le champ est vide ou si c'est un nouveau tarif
+                if (!placesInput.value || placesInput.value === '0') {
+                    placesInput.value = capacite;
+                }
+            } else {
+                capaciteSpan.textContent = '-';
+            }
+        }
+        
+        // Écouter le changement de vol
+        volSelect.addEventListener('change', function() {
+            const selectedOption = volSelect.options[volSelect.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                const capacite = selectedOption.getAttribute('data-capacite');
+                capaciteSpan.textContent = capacite;
+                placesInput.value = capacite;
+            } else {
+                capaciteSpan.textContent = '-';
+                placesInput.value = '';
+            }
+        });
+        
+        // Initialiser au chargement
+        updatePlacesDisponibles();
+    });
+</script>
 </body>
 </html>
