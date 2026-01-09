@@ -1,9 +1,9 @@
 package com.example.airline.model;
 
+import com.example.airline.model.enums.StatutEmploye;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
-
 import java.util.List;
 
 @Entity
@@ -20,7 +20,9 @@ public class Employe {
     private String email;
     private String telephone;
     private LocalDate dateEmbauche;
-    private String statut;
+
+    @Enumerated(EnumType.STRING)
+    private StatutEmploye statut;
 
     @ManyToOne
     @JoinColumn(name = "id_compagnie")

@@ -1,5 +1,6 @@
 package com.example.airline.model;
 
+import com.example.airline.model.enums.StatutReservation;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -16,7 +17,9 @@ public class Reservation {
     private String numeroSiege;
     private Double prixPaye;
     private LocalDateTime dateReservation;
-    private String statut;
+
+    @Enumerated(EnumType.STRING)
+    private StatutReservation statut;
 
     @ManyToOne
     @JoinColumn(name = "id_passager")

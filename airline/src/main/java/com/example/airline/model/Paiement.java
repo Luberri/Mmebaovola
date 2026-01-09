@@ -1,5 +1,7 @@
 package com.example.airline.model;
 
+import com.example.airline.model.enums.ModePaiement;
+import com.example.airline.model.enums.StatutPaiement;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -14,9 +16,14 @@ public class Paiement {
     private Long id;
 
     private Double montant;
-    private String modePaiement;
+
+    @Enumerated(EnumType.STRING)
+    private ModePaiement modePaiement;
+
     private LocalDateTime datePaiement;
-    private String statut;
+
+    @Enumerated(EnumType.STRING)
+    private StatutPaiement statut;
 
     @ManyToOne
     @JoinColumn(name = "id_reservation")

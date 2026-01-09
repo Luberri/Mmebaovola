@@ -1,5 +1,6 @@
 package com.example.airline.model;
 
+import com.example.airline.model.enums.RoleVol;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,7 +13,8 @@ public class AffectationVol {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String roleVol; // commandant, copilote, chef_cabine, personnel_cabine
+    @Enumerated(EnumType.STRING)
+    private RoleVol roleVol;
 
     @ManyToOne
     @JoinColumn(name = "id_vol")

@@ -1,5 +1,6 @@
 package com.example.airline.model;
 
+import com.example.airline.model.enums.EtatAvion;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,7 +16,9 @@ public class Avion {
     private String modele;
     private Integer capaciteTotale;
     private String immatriculation;
-    private String etat;
+
+    @Enumerated(EnumType.STRING)
+    private EtatAvion etat;
 
     @ManyToOne
     @JoinColumn(name = "id_compagnie")

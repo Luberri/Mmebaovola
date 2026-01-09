@@ -1,5 +1,6 @@
 package com.example.airline.model;
 
+import com.example.airline.model.enums.RoleSysteme;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,7 +15,9 @@ public class Utilisateur {
 
     private String nom;
     private String motDePasse;
-    private String roleSysteme; // ADMIN, AGENT
+
+    @Enumerated(EnumType.STRING)
+    private RoleSysteme roleSysteme;
 
     @ManyToOne
     @JoinColumn(name = "id_employe", nullable = true)
