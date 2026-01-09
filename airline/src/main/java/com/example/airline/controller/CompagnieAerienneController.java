@@ -2,13 +2,12 @@ package com.example.airline.controller;
 
 import com.example.airline.model.CompagnieAerienne;
 import com.example.airline.service.CompagnieAerienneService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/compagnies-aeriennes")
+@Controller
+@RequestMapping("/compagnies-aeriennes")
 public class CompagnieAerienneController {
 
     private final CompagnieAerienneService compagnieAerienneService;
@@ -18,38 +17,36 @@ public class CompagnieAerienneController {
     }
 
     @GetMapping
-    public List<CompagnieAerienne> getAllCompagniesAeriennes() {
-        return compagnieAerienneService.findAll();
+    public String listCompagnies(Model model) {
+        model.addAttribute("compagnies", compagnieAerienneService.findAll());
+        return "compagnies/list";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CompagnieAerienne> getCompagnieAerienneById(@PathVariable Long id) {
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("compagnie", new CompagnieAerienne());
+        return "compagnies/form";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
         return compagnieAerienneService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public CompagnieAerienne createCompagnieAerienne(@RequestBody CompagnieAerienne compagnieAerienne) {
-        return compagnieAerienneService.save(compagnieAerienne);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<CompagnieAerienne> updateCompagnieAerienne(@PathVariable Long id, @RequestBody CompagnieAerienne compagnieAerienne) {
-        return compagnieAerienneService.findById(id)
-                .map(existing -> {
-                    compagnieAerienne.setId(id);
-                    return ResponseEntity.ok(compagnieAerienneService.save(compagnieAerienne));
+                .map(compagnie -> {
+                    model.addAttribute("compagnie", compagnie);
+                    return "compagnies/form";
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElse("redirect:/compagnies-aeriennes");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCompagnieAerienne(@PathVariable Long id) {
-        if (compagnieAerienneService.findById(id).isPresent()) {
-            compagnieAerienneService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    @PostMapping("/save")
+    public String saveCompagnie(@ModelAttribute CompagnieAerienne compagnie) {
+        compagnieAerienneService.save(compagnie);
+        return "redirect:/compagnies-aeriennes";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteCompagnie(@PathVariable Long id) {
+        compagnieAerienneService.deleteById(id);
+        return "redirect:/compagnies-aeriennes";
     }
 }
