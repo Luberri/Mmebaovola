@@ -1,79 +1,67 @@
+<!-- src/main/resources/templates/vols/list.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vols</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-</head>
+<head th:replace="~{Nav :: head(title='Liste des vols')}"></head>
 <body>
-<div class="container mt-4">
-    <h1 class="mb-4">Liste des Vols</h1>
+    <nav th:replace="~{Nav :: navbar}"></nav>
     
-    <a th:href="@{/vols/new}" class="btn btn-primary mb-3">
-        <i class="bi bi-plus"></i> Nouveau Vol
-    </a>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-airplane-engines"></i> Liste des vols</h1>
+            <a th:href="@{/vols/new}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouveau vol
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Numéro de vol</th>
+                                <th>Compagnie</th>
+                                <th>Avion</th>
+                                <th>Départ</th>
+                                <th>Arrivée</th>
+                                <th>Date départ</th>
+                                <th>Date arrivée</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="vol : ${vols}">
+                                <td th:text="${vol.numeroVol}"></td>
+                                <td th:text="${vol.compagnie?.nom}"></td>
+                                <td th:text="${vol.avion?.modele}"></td>
+                                <td th:text="${vol.aeroportDepart?.nom}"></td>
+                                <td th:text="${vol.aeroportArrivee?.nom}"></td>
+                                <td th:text="${#temporals.format(vol.dateHeureDepart, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td th:text="${#temporals.format(vol.dateHeureArrivee, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <a th:href="@{/vols/edit/{id}(id=${vol.id})}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Modifier
+                                    </a>
+                                    <a th:href="@{/vols/delete/{id}(id=${vol.id})}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce vol ?')">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(vols)}">
+                                <td colspan="8" class="text-center text-muted">
+                                    <i class="bi bi-inbox"></i> Aucun vol trouvé
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>N° Vol</th>
-                <th>Compagnie</th>
-                <th>Départ</th>
-                <th>Arrivée</th>
-                <th>Date/Heure Départ</th>
-                <th>Date/Heure Arrivée</th>
-                <th>Avion</th>
-                <th>Statut</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="vol : ${vols}">
-                <td th:text="${vol.id}"></td>
-                <td th:text="${vol.numeroVol}"></td>
-                <td th:text="${vol.compagnie != null ? vol.compagnie.nom : '-'}"></td>
-                <td th:text="${vol.aeroportDepart != null ? vol.aeroportDepart.nom + ' (' + vol.aeroportDepart.codeIata + ')' : '-'}"></td>
-                <td th:text="${vol.aeroportArrivee != null ? vol.aeroportArrivee.nom + ' (' + vol.aeroportArrivee.codeIata + ')' : '-'}"></td>
-                <td th:text="${vol.dateHeureDepart != null ? #temporals.format(vol.dateHeureDepart, 'dd/MM/yyyy HH:mm') : '-'}"></td>
-                <td th:text="${vol.dateHeureArrivee != null ? #temporals.format(vol.dateHeureArrivee, 'dd/MM/yyyy HH:mm') : '-'}"></td>
-                <td th:text="${vol.avion != null ? vol.avion.modele + ' (' + vol.avion.immatriculation + ')' : '-'}"></td>
-                <td>
-                    <span th:if="${vol.statut == 'PREVU'}" class="badge bg-info">Prévu</span>
-                    <span th:if="${vol.statut == 'EN_COURS'}" class="badge bg-primary">En cours</span>
-                    <span th:if="${vol.statut == 'TERMINE'}" class="badge bg-success">Terminé</span>
-                    <span th:if="${vol.statut == 'ANNULE'}" class="badge bg-danger">Annulé</span>
-                </td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <a th:href="@{/reservations(filterVol=${vol.numeroVol})}" 
-                           class="btn btn-sm btn-info" title="Voir les réservations">
-                            <i class="bi bi-ticket-perforated"></i> Réservations
-                        </a>
-                        <a th:href="@{/tarifs/new(volId=${vol.id})}" 
-                           class="btn btn-sm btn-success" title="Ajouter tarif">
-                            <i class="bi bi-currency-euro"></i> Tarif
-                        </a>
-                        <a th:href="@{/vols/edit/{id}(id=${vol.id})}" 
-                           class="btn btn-sm btn-warning" title="Modifier">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <a th:href="@{/vols/delete/{id}(id=${vol.id})}" 
-                           class="btn btn-sm btn-danger" title="Supprimer"
-                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce vol ?')">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(vols)}">
-                <td colspan="10" class="text-center">Aucun vol trouvé</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <footer th:replace="~{Nav :: footer}"></footer>
+    <div th:replace="~{Nav :: scripts}"></div>
 </body>
 </html>

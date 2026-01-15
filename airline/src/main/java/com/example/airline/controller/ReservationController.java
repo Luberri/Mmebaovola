@@ -27,6 +27,7 @@ public class ReservationController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("reservations", reservationService.findAll());
+        // The template 'reservations/list' now uses Nav.html as layout
         return "reservations/list";
     }
 

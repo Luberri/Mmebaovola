@@ -1,432 +1,74 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réservations</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        .filter-badge {
-            margin-right: 5px;
-            margin-bottom: 5px;
-        }
-        .active-filters {
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-        .filter-section {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        .filter-section.show {
-            display: block;
-        }
-    </style>
-</head>
+<head th:replace="~{Nav :: head(title='Liste des réservations')}"></head>
 <body>
-<div class="container mt-4">
-    <h1 class="mb-4">Liste des Réservations</h1>
+    <nav th:replace="~{Nav :: navbar}"></nav>
     
-    <div class="d-flex gap-2 mb-3">
-        <a th:href="@{/reservations/new}" class="btn btn-primary">
-            <i class="bi bi-plus"></i> Nouvelle Réservation
-        </a>
-        <button type="button" class="btn btn-secondary" id="toggleFilters">
-            <i class="bi bi-funnel"></i> Filtres
-        </button>
-        <button type="button" class="btn btn-outline-danger" id="clearFilters" style="display: none;">
-            <i class="bi bi-x-circle"></i> Effacer les filtres
-        </button>
-        <a th:href="@{/vols}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Retour aux vols
-        </a>
-    </div>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-bookmark"></i> Liste des réservations</h1>
+            <a th:href="@{/reservations/new}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouvelle réservation
+            </a>
+        </div>
 
-    <!-- Section des filtres -->
-    <div class="filter-section" id="filterSection">
-        <div class="row g-3">
-            <div class="col-md-3">
-                <label for="filterPassager" class="form-label">Passager</label>
-                <input type="text" class="form-control" id="filterPassager" placeholder="Nom ou prénom...">
-            </div>
-            <div class="col-md-3">
-                <label for="filterVol" class="form-label">N° Vol</label>
-                <input type="text" class="form-control" id="filterVol" placeholder="Numéro de vol...">
-            </div>
-            <div class="col-md-2">
-                <label for="filterClasse" class="form-label">Classe</label>
-                <select class="form-select" id="filterClasse">
-                    <option value="">Toutes</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="filterStatut" class="form-label">Statut</label>
-                <select class="form-select" id="filterStatut">
-                    <option value="">Tous</option>
-                    <option value="CONFIRMEE">Confirmée</option>
-                    <option value="EN_ATTENTE">En attente</option>
-                    <option value="ANNULEE">Annulée</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label for="filterPrixMin" class="form-label">Prix Min (€)</label>
-                <input type="number" class="form-control" id="filterPrixMin" placeholder="0">
-            </div>
-            <div class="col-md-2">
-                <label for="filterPrixMax" class="form-label">Prix Max (€)</label>
-                <input type="number" class="form-control" id="filterPrixMax" placeholder="1000">
-            </div>
-            <div class="col-md-2">
-                <label for="filterDateDebut" class="form-label">Date début</label>
-                <input type="date" class="form-control" id="filterDateDebut">
-            </div>
-            <div class="col-md-2">
-                <label for="filterDateFin" class="form-label">Date fin</label>
-                <input type="date" class="form-control" id="filterDateFin">
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-primary w-100" id="applyFilters">
-                    <i class="bi bi-search"></i> Appliquer
-                </button>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Passager</th>
+                                <th>Vol</th>
+                                <th>Classe</th>
+                                <th>Siège</th>
+                                <th>Prix payé</th>
+                                <th>Date réservation</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="reservation : ${reservations}">
+                                <td th:text="${reservation.id}"></td>
+                                <td th:text="${reservation.passager != null ? reservation.passager.nom + ' ' + reservation.passager.prenom : '-'}"></td>
+                                <td th:text="${reservation.vol != null ? reservation.vol.numeroVol : '-'}"></td>
+                                <td th:text="${reservation.classe != null ? reservation.classe.libelle : '-'}"></td>
+                                <td th:text="${reservation.numeroSiege}"></td>
+                                <td>
+                                    <span th:text="${reservation.prixPaye != null ? #numbers.formatDecimal(reservation.prixPaye, 0, 2) : '0.00'}"></span> €
+                                </td>
+                                <td th:text="${reservation.dateReservation != null ? #temporals.format(reservation.dateReservation, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                                <td>
+                                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'CONFIRMEE'}" class="badge bg-success">Confirmée</span>
+                                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'EN_ATTENTE'}" class="badge bg-warning text-dark">En attente</span>
+                                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'ANNULEE'}" class="badge bg-danger">Annulée</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Modifier
+                                    </a>
+                                    <a th:href="@{/reservations/delete/{id}(id=${reservation.id})}" 
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(reservations)}">
+                                <td colspan="9" class="text-center text-muted">
+                                    <i class="bi bi-inbox"></i> Aucune réservation trouvée
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Affichage des filtres actifs -->
-    <div class="active-filters" id="activeFilters" style="display: none;">
-        <strong><i class="bi bi-funnel-fill"></i> Filtres actifs :</strong>
-        <span id="filterBadges"></span>
-        <span class="ms-2 text-muted" id="resultCount"></span>
-    </div>
     
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Passager</th>
-                <th>Vol</th>
-                <th>Classe</th>
-                <th>Siège</th>
-                <th>Prix</th>
-                <th>Date</th>
-                <th>Statut</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="reservationTableBody">
-            <tr th:each="reservation : ${reservations}" class="reservation-row"
-                th:data-passager="${reservation.passager != null ? reservation.passager.nom + ' ' + reservation.passager.prenom : ''}"
-                th:data-vol="${reservation.vol != null ? reservation.vol.numeroVol : ''}"
-                th:data-classe="${reservation.classe != null ? reservation.classe.libelle : ''}"
-                th:data-prix="${reservation.prixPaye != null ? reservation.prixPaye : 0}"
-                th:data-date="${reservation.dateReservation != null ? #temporals.format(reservation.dateReservation, 'yyyy-MM-dd') : ''}"
-                th:data-statut="${reservation.statut != null ? reservation.statut.name() : ''}">
-                <td th:text="${reservation.id}"></td>
-                <td th:text="${reservation.passager != null ? reservation.passager.nom + ' ' + reservation.passager.prenom : '-'}"></td>
-                <td th:text="${reservation.vol != null ? reservation.vol.numeroVol : '-'}"></td>
-                <td th:text="${reservation.classe != null ? reservation.classe.libelle : '-'}"></td>
-                <td th:text="${reservation.numeroSiege}"></td>
-                <td><span th:text="${reservation.prixPaye != null ? #numbers.formatDecimal(reservation.prixPaye, 0, 2) : '0.00'}"></span> €</td>
-                <td th:text="${reservation.dateReservation != null ? #temporals.format(reservation.dateReservation, 'dd/MM/yyyy HH:mm') : '-'}"></td>
-                <td>
-                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'CONFIRMEE'}" class="badge bg-success">Confirmée</span>
-                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'EN_ATTENTE'}" class="badge bg-warning">En attente</span>
-                    <span th:if="${reservation.statut != null and reservation.statut.name() == 'ANNULEE'}" class="badge bg-danger">Annulée</span>
-                </td>
-                <td>
-                    <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" 
-                       class="btn btn-sm btn-warning">Modifier</a>
-                    <a th:href="@{/reservations/delete/{id}(id=${reservation.id})}" 
-                       class="btn btn-sm btn-danger"
-                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')">Supprimer</a>
-                </td>
-            </tr>
-            <tr id="noResultRow" style="display: none;">
-                <td colspan="9" class="text-center text-muted">Aucune réservation ne correspond aux filtres</td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(reservations)}" id="emptyRow">
-                <td colspan="9" class="text-center">Aucune réservation trouvée</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const toggleFiltersBtn = document.getElementById('toggleFilters');
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    const applyFiltersBtn = document.getElementById('applyFilters');
-    const filterSection = document.getElementById('filterSection');
-    const activeFiltersDiv = document.getElementById('activeFilters');
-    const filterBadges = document.getElementById('filterBadges');
-    const resultCount = document.getElementById('resultCount');
-    const rows = document.querySelectorAll('.reservation-row');
-    const noResultRow = document.getElementById('noResultRow');
-
-    // Remplir dynamiquement le select des classes
-    const classeSelect = document.getElementById('filterClasse');
-    const classes = new Set();
-    rows.forEach(row => {
-        const classe = row.dataset.classe;
-        if (classe) classes.add(classe);
-    });
-    classes.forEach(classe => {
-        const option = document.createElement('option');
-        option.value = classe;
-        option.textContent = classe;
-        classeSelect.appendChild(option);
-    });
-
-    // Lire les paramètres URL pour pré-remplir les filtres
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlFilterVol = urlParams.get('filterVol');
-    const urlFilterPassager = urlParams.get('filterPassager');
-    const urlFilterClasse = urlParams.get('filterClasse');
-    const urlFilterStatut = urlParams.get('filterStatut');
-    const urlFilterPrixMin = urlParams.get('filterPrixMin');
-    const urlFilterPrixMax = urlParams.get('filterPrixMax');
-    const urlFilterDateDebut = urlParams.get('filterDateDebut');
-    const urlFilterDateFin = urlParams.get('filterDateFin');
-
-    // Pré-remplir les champs de filtre depuis l'URL
-    if (urlFilterVol) document.getElementById('filterVol').value = urlFilterVol;
-    if (urlFilterPassager) document.getElementById('filterPassager').value = urlFilterPassager;
-    if (urlFilterClasse) document.getElementById('filterClasse').value = urlFilterClasse;
-    if (urlFilterStatut) document.getElementById('filterStatut').value = urlFilterStatut;
-    if (urlFilterPrixMin) document.getElementById('filterPrixMin').value = urlFilterPrixMin;
-    if (urlFilterPrixMax) document.getElementById('filterPrixMax').value = urlFilterPrixMax;
-    if (urlFilterDateDebut) document.getElementById('filterDateDebut').value = urlFilterDateDebut;
-    if (urlFilterDateFin) document.getElementById('filterDateFin').value = urlFilterDateFin;
-
-    // Si des filtres sont présents dans l'URL, ouvrir la section et appliquer
-    const hasUrlFilters = urlFilterVol || urlFilterPassager || urlFilterClasse || 
-                          urlFilterStatut || urlFilterPrixMin || urlFilterPrixMax || 
-                          urlFilterDateDebut || urlFilterDateFin;
-    
-    if (hasUrlFilters) {
-        filterSection.classList.add('show');
-        toggleFiltersBtn.innerHTML = '<i class="bi bi-funnel-fill"></i> Masquer les filtres';
-        applyFilters();
-    }
-
-    // Toggle affichage des filtres
-    toggleFiltersBtn.addEventListener('click', function() {
-        filterSection.classList.toggle('show');
-        if (filterSection.classList.contains('show')) {
-            toggleFiltersBtn.innerHTML = '<i class="bi bi-funnel-fill"></i> Masquer les filtres';
-        } else {
-            toggleFiltersBtn.innerHTML = '<i class="bi bi-funnel"></i> Filtres';
-        }
-    });
-
-    // Appliquer les filtres
-    applyFiltersBtn.addEventListener('click', applyFilters);
-
-    // Appliquer les filtres aussi avec Enter
-    document.querySelectorAll('#filterSection input, #filterSection select').forEach(input => {
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') applyFilters();
-        });
-    });
-
-    // Effacer les filtres
-    clearFiltersBtn.addEventListener('click', function() {
-        document.getElementById('filterPassager').value = '';
-        document.getElementById('filterVol').value = '';
-        document.getElementById('filterClasse').value = '';
-        document.getElementById('filterStatut').value = '';
-        document.getElementById('filterPrixMin').value = '';
-        document.getElementById('filterPrixMax').value = '';
-        document.getElementById('filterDateDebut').value = '';
-        document.getElementById('filterDateFin').value = '';
-        
-        rows.forEach(row => row.style.display = '');
-        noResultRow.style.display = 'none';
-        activeFiltersDiv.style.display = 'none';
-        clearFiltersBtn.style.display = 'none';
-
-        // Nettoyer l'URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-    });
-
-    function applyFilters() {
-        const passager = document.getElementById('filterPassager').value.toLowerCase().trim();
-        const vol = document.getElementById('filterVol').value.toLowerCase().trim();
-        const classe = document.getElementById('filterClasse').value;
-        const statut = document.getElementById('filterStatut').value;
-        const prixMin = parseFloat(document.getElementById('filterPrixMin').value) || 0;
-        const prixMax = parseFloat(document.getElementById('filterPrixMax').value) || Infinity;
-        const dateDebut = document.getElementById('filterDateDebut').value;
-        const dateFin = document.getElementById('filterDateFin').value;
-
-        let visibleCount = 0;
-        const activeFiltersList = [];
-
-        rows.forEach(row => {
-            const rowPassager = row.dataset.passager.toLowerCase();
-            const rowVol = row.dataset.vol.toLowerCase();
-            const rowClasse = row.dataset.classe;
-            const rowStatut = row.dataset.statut;
-            const rowPrix = parseFloat(row.dataset.prix) || 0;
-            const rowDate = row.dataset.date;
-
-            let show = true;
-
-            // Filtre par passager
-            if (passager && !rowPassager.includes(passager)) {
-                show = false;
-            }
-
-            // Filtre par vol
-            if (vol && !rowVol.toLowerCase().includes(vol)) {
-                show = false;
-            }
-
-            // Filtre par classe
-            if (classe && rowClasse !== classe) {
-                show = false;
-            }
-
-            // Filtre par statut
-            if (statut && rowStatut !== statut) {
-                show = false;
-            }
-
-            // Filtre par prix min
-            if (rowPrix < prixMin) {
-                show = false;
-            }
-
-            // Filtre par prix max
-            if (prixMax !== Infinity && rowPrix > prixMax) {
-                show = false;
-            }
-
-            // Filtre par date début
-            if (dateDebut && rowDate < dateDebut) {
-                show = false;
-            }
-
-            // Filtre par date fin
-            if (dateFin && rowDate > dateFin) {
-                show = false;
-            }
-
-            row.style.display = show ? '' : 'none';
-            if (show) visibleCount++;
-        });
-
-        // Construire les badges de filtres actifs
-        filterBadges.innerHTML = '';
-        
-        if (passager) {
-            activeFiltersList.push(`Passager: "${passager}"`);
-            addFilterBadge('Passager', passager, 'filterPassager');
-        }
-        if (vol) {
-            activeFiltersList.push(`Vol: "${vol}"`);
-            addFilterBadge('Vol', vol, 'filterVol');
-        }
-        if (classe) {
-            activeFiltersList.push(`Classe: ${classe}`);
-            addFilterBadge('Classe', classe, 'filterClasse');
-        }
-        if (statut) {
-            const statutLabel = statut === 'CONFIRMEE' ? 'Confirmée' : 
-                               statut === 'EN_ATTENTE' ? 'En attente' : 'Annulée';
-            activeFiltersList.push(`Statut: ${statutLabel}`);
-            addFilterBadge('Statut', statutLabel, 'filterStatut');
-        }
-        if (prixMin > 0) {
-            activeFiltersList.push(`Prix min: ${prixMin}€`);
-            addFilterBadge('Prix min', prixMin + '€', 'filterPrixMin');
-        }
-        if (prixMax !== Infinity) {
-            activeFiltersList.push(`Prix max: ${prixMax}€`);
-            addFilterBadge('Prix max', prixMax + '€', 'filterPrixMax');
-        }
-        if (dateDebut) {
-            activeFiltersList.push(`Depuis: ${formatDate(dateDebut)}`);
-            addFilterBadge('Depuis', formatDate(dateDebut), 'filterDateDebut');
-        }
-        if (dateFin) {
-            activeFiltersList.push(`Jusqu'au: ${formatDate(dateFin)}`);
-            addFilterBadge('Jusqu\'au', formatDate(dateFin), 'filterDateFin');
-        }
-
-        // Afficher/masquer les éléments
-        if (activeFiltersList.length > 0) {
-            activeFiltersDiv.style.display = 'block';
-            clearFiltersBtn.style.display = 'inline-block';
-            resultCount.textContent = `(${visibleCount} résultat${visibleCount > 1 ? 's' : ''})`;
-        } else {
-            activeFiltersDiv.style.display = 'none';
-            clearFiltersBtn.style.display = 'none';
-        }
-
-        // Afficher message si aucun résultat
-        noResultRow.style.display = visibleCount === 0 && rows.length > 0 ? '' : 'none';
-
-        // Mettre à jour l'URL avec les filtres actuels (sans recharger la page)
-        updateUrlParams();
-    }
-
-    function addFilterBadge(label, value, inputId) {
-        const badge = document.createElement('span');
-        badge.className = 'badge bg-primary filter-badge';
-        badge.innerHTML = `${label}: ${value} <i class="bi bi-x" style="cursor: pointer;"></i>`;
-        badge.querySelector('i').addEventListener('click', function() {
-            const input = document.getElementById(inputId);
-            if (input.tagName === 'SELECT') {
-                input.value = '';
-            } else {
-                input.value = '';
-            }
-            applyFilters();
-        });
-        filterBadges.appendChild(badge);
-    }
-
-    function formatDate(dateStr) {
-        const parts = dateStr.split('-');
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-    }
-
-    function updateUrlParams() {
-        const params = new URLSearchParams();
-        
-        const passager = document.getElementById('filterPassager').value.trim();
-        const vol = document.getElementById('filterVol').value.trim();
-        const classe = document.getElementById('filterClasse').value;
-        const statut = document.getElementById('filterStatut').value;
-        const prixMin = document.getElementById('filterPrixMin').value;
-        const prixMax = document.getElementById('filterPrixMax').value;
-        const dateDebut = document.getElementById('filterDateDebut').value;
-        const dateFin = document.getElementById('filterDateFin').value;
-
-        if (passager) params.set('filterPassager', passager);
-        if (vol) params.set('filterVol', vol);
-        if (classe) params.set('filterClasse', classe);
-        if (statut) params.set('filterStatut', statut);
-        if (prixMin) params.set('filterPrixMin', prixMin);
-        if (prixMax) params.set('filterPrixMax', prixMax);
-        if (dateDebut) params.set('filterDateDebut', dateDebut);
-        if (dateFin) params.set('filterDateFin', dateFin);
-
-        const newUrl = params.toString() 
-            ? `${window.location.pathname}?${params.toString()}`
-            : window.location.pathname;
-        
-        window.history.replaceState({}, document.title, newUrl);
-    }
-});
-</script>
+    <footer th:replace="~{Nav :: footer}"></footer>
+    <div th:replace="~{Nav :: scripts}"></div>
 </body>
 </html>
