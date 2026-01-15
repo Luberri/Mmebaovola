@@ -42,8 +42,9 @@ public class VolController {
 
     @PostMapping
     public String save(@ModelAttribute Vol vol) {
-        volService.save(vol);
-        return "redirect:/vols";
+        Vol savedVol = volService.save(vol);
+        // Rediriger vers la création de tarif avec le vol pré-sélectionné
+        return "redirect:/tarifs/new?volId=" + savedVol.getId();
     }
 
     @GetMapping("/edit/{id}")
