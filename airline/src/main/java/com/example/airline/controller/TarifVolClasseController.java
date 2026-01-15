@@ -32,14 +32,15 @@ public class TarifVolClasseController {
     }
 
     @GetMapping("/new")
-    public String createForm(@RequestParam(required = false) Long volId, Model model) {
+    public String createTarifForm(@RequestParam(required = false) Long volId, Model model) {
         TarifVolClasse tarif = new TarifVolClasse();
-        
-        // Pré-sélectionner le vol si volId est fourni
+
+        // Pré-remplir le vol si volId est fourni
         if (volId != null) {
-            volService.findById(volId).ifPresent(tarif::setVol);
+            volService.findById(volId)
+            .ifPresent(tarif::setVol);
         }
-        
+
         model.addAttribute("tarif", tarif);
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());

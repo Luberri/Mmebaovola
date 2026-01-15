@@ -43,4 +43,52 @@ public class Vol {
 
     @OneToMany(mappedBy = "vol")
     private List<AffectationVol> affectations;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNumeroVol() {
+        return numeroVol;
+    }
+
+    public LocalDateTime getDateHeureDepart() {
+        return dateHeureDepart;
+    }
+
+    public LocalDateTime getDateHeureArrivee() {
+        return dateHeureArrivee;
+    }
+
+    public String getStatut() {
+        return statut;
+    }
+
+    public CompagnieAerienne getCompagnie() {
+        return compagnie;
+    }
+
+    public Avion getAvion() {
+        return avion;
+    }
+
+    public Aeroport getAeroportDepart() {
+        return aeroportDepart;
+    }
+
+    public Aeroport getAeroportArrivee() {
+        return aeroportArrivee;
+    }
+
+    public List<TarifVolClasse> getTarifs() {
+        return tarifs;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public List<AffectationVol> getAffectations() {
+        return affectations;
+    }
 }

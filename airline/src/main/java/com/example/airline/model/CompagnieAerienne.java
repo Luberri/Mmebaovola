@@ -27,4 +27,40 @@ public class CompagnieAerienne {
 
     @OneToMany(mappedBy = "compagnie")
     private List<Employe> employes;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public String getPays() {
+        return pays;
+    }
+
+    public String getCodeIata() {
+        return codeIata;
+    }
+
+    public String getCodeIcao() {
+        return codeIcao;
+    }
+
+    public Boolean getActif() {
+        return actif;
+    }
+
+    public List<Avion> getAvions() {
+        return avions;
+    }
+
+    public List<Vol> getVols() {
+        return vols;
+    }
+
+    public List<Employe> getEmployes() {
+        return employes;
+    }
 }

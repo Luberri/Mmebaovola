@@ -27,7 +27,6 @@ public class VolController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("vols", volService.findAll());
-        // The template 'vols/list' now uses Nav.html as layout
         return "vols/list";
     }
 

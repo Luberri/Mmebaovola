@@ -23,4 +23,28 @@ public class Avion {
     @ManyToOne
     @JoinColumn(name = "id_compagnie")
     private CompagnieAerienne compagnie;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getModele() {
+        return modele;
+    }
+
+    public Integer getCapaciteTotale() {
+        return capaciteTotale;
+    }
+
+    public String getImmatriculation() {
+        return immatriculation;
+    }
+
+    public EtatAvion getEtat() {
+        return etat;
+    }
+
+    public CompagnieAerienne getCompagnie() {
+        return compagnie;
+    }
 }
