@@ -24,4 +24,16 @@ public class TarifVolClasse {
     private BigDecimal prix;
     
     private Integer placesDisponibles;
+
+    public BigDecimal getPrix() {
+        return prix;
+    }
+
+    public long getPlacesDisponibles() {
+        return placesDisponibles;
+    }
+
+    public void setVol(Vol v) {
+        this.vol = v;
+    }
 }

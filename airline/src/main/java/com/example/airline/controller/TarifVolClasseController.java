@@ -37,7 +37,7 @@ public class TarifVolClasseController {
         
         // Pré-sélectionner le vol si volId est fourni
         if (volId != null) {
-            volService.findById(volId).ifPresent(tarif::setVol);
+            volService.findById(volId).ifPresent(v -> tarif.setVol(v));
         }
         
         model.addAttribute("tarif", tarif);

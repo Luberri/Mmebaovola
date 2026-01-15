@@ -26,6 +26,7 @@
                                 <th>Arrivée</th>
                                 <th>Date départ</th>
                                 <th>Date arrivée</th>
+                                <th>Valeur Max (€)</th> <!-- Nouvelle colonne -->
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -38,6 +39,7 @@
                                 <td th:text="${vol.aeroportArrivee?.nom}"></td>
                                 <td th:text="${#temporals.format(vol.dateHeureDepart, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td th:text="${#temporals.format(vol.dateHeureArrivee, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td th:text="${maxRevenues != null && maxRevenues[vol.id] != null ? #numbers.formatDecimal(maxRevenues[vol.id], 0, 2) : 'N/A'}"></td> <!-- Afficher la valeur max -->
                                 <td>
                                     <a th:href="@{/vols/edit/{id}(id=${vol.id})}" class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil"></i> Modifier
@@ -50,7 +52,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(vols)}">
-                                <td colspan="8" class="text-center text-muted">
+                                <td colspan="9" class="text-center text-muted">
                                     <i class="bi bi-inbox"></i> Aucun vol trouvé
                                 </td>
                             </tr>

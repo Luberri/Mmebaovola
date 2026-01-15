@@ -1,9 +1,14 @@
 package com.example.airline.model;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
 
 @Entity
 @Table(name = "vol")
@@ -43,4 +48,8 @@ public class Vol {
 
     @OneToMany(mappedBy = "vol")
     private List<AffectationVol> affectations;
+
+    public Long getId() {
+        return this.id;
+    }
 }

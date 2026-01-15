@@ -7,6 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("/vols")
 public class VolController {
@@ -26,8 +30,18 @@ public class VolController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("vols", volService.findAll());
-        // The template 'vols/list' now uses Nav.html as layout
+        var vols = volService.findAll();
+        model.addAttribute("vols", vols);
+
+        Map<Long, BigDecimal> maxRevenues = vols.stream()
+            .collect(Collectors.toMap(
+                Vol::getId,
+                vol -> volService.calculateMaxRevenueForVol(vol.getId()),
+                (a, b) -> a
+            ));
+
+        model.addAttribute("maxRevenues", maxRevenues);
+
         return "vols/list";
     }
 

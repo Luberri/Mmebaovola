@@ -110,8 +110,8 @@ INSERT INTO paiement (
   statut,
   id_reservation
 ) VALUES
-(1200000, 'ESPECES', NOW(), 'VALIDE', 3), -- ModePaiement.ESPECES, StatutPaiement.VALIDE
-(700000, 'ESPECES', NOW(), 'VALIDE', 4); -- ModePaiement.ESPECES, StatutPaiement.VALIDE
+(1200000, 'ESPECES', NOW(), 'VALIDE', 1), -- ModePaiement.ESPECES, StatutPaiement.VALIDE
+(700000, 'ESPECES', NOW(), 'VALIDE', 2); -- ModePaiement.ESPECES, StatutPaiement.VALIDE
 
 -- =========================
 -- TEST : VALEUR MAXIMALE DU VOL

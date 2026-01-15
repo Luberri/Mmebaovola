@@ -1,121 +1,60 @@
 -- =========================
--- COMPAGNIE AERIENNE
+-- COMPAGNIES AERIENNES
 -- =========================
-INSERT INTO compagnie_aerienne (nom, code_iata, pays)
+INSERT INTO compagnie_aerienne (nom, pays, code_iata, code_icao, actif)
 VALUES
-('Air Alpha', 'AA', 'Madagascar');
+('Air Madagascar', 'Madagascar', 'MD', 'MDG', true),
+('Air France', 'France', 'AF', 'AFR', true);
 
 -- =========================
--- AEROPORT
+-- AEROPORTS
 -- =========================
-INSERT INTO aeroport (nom, ville, pays, code_iata)
+INSERT INTO aeroport (nom, ville, pays, code_iata, code_icao, actif)
 VALUES
-('Ivato International', 'Antananarivo', 'Madagascar', 'TNR'),
-('Sir Seewoosagur Ramgoolam', 'Mauritius', 'Mauritius', 'MRU');
+('Ivato International Airport', 'Antananarivo', 'Madagascar', 'TNR', 'FMMI', true),
+('Fascene Airport', 'Nosy Be', 'Madagascar', 'NOS', 'FMNN', true),
+('Charles de Gaulle Airport', 'Paris', 'France', 'CDG', 'LFPG', true);
 
 -- =========================
--- AVION
+-- AVIONS
 -- =========================
 INSERT INTO avion (modele, capacite_totale, immatriculation, etat, id_compagnie)
 VALUES
-('Boeing 737', 180, 'AA-737-01', 'EN_SERVICE', 1);
+('Boeing 737-800', 160, '5R-MBA', 'EN_SERVICE', 1),
+('Airbus A320', 180, 'F-GKXA', 'EN_SERVICE', 2);
 
 -- =========================
--- CLASSE DE VOYAGE
+-- CLASSES DE VOYAGE
 -- =========================
 INSERT INTO classe_voyage (libelle, description)
 VALUES
-('ECONOMIQUE', 'Classe économique'),
-('BUSINESS', 'Classe affaires'),
-('PREMIERE', 'Première classe');
+('Economique', 'Classe économique'),
+('Business', 'Classe affaires');
 
 -- =========================
--- VOL
+-- CAPACITE AVION PAR CLASSE
 -- =========================
-INSERT INTO vol (
-    numero_vol,
-    id_compagnie,
-    id_avion,
-    id_aeroport_depart,
-    id_aeroport_arrivee,
-    date_heure_depart,
-    date_heure_arrivee,
-    statut
-)
+INSERT INTO capacite_avion_classe (nbr_sieges, id_avion, id_classe)
 VALUES
-('AA101', 1, 1, 1, 2, '2026-02-01 08:00:00', '2026-02-01 10:30:00', 'PREVU');
+(120, 1, 1), -- 120 sièges économiques pour le Boeing 737
+(40, 1, 2),  -- 40 sièges business pour le Boeing 737
+(150, 2, 1), -- 150 sièges économiques pour l'Airbus A320
+(30, 2, 2);  -- 30 sièges business pour l'Airbus A320
 
 -- =========================
--- PASSAGER
+-- VOLS
 -- =========================
-INSERT INTO passager (nom, prenom, email, telephone)
+INSERT INTO vol (numero_vol, date_heure_depart, date_heure_arrivee, statut, id_compagnie, id_avion, id_aeroport_depart, id_aeroport_arrivee)
 VALUES
-('Rabe', 'Jean', 'jean.rabe@gmail.com', '0340000001'),
-('Rakoto', 'Marie', 'marie.rakoto@gmail.com', '0340000002');
+('MD101', '2026-01-20 08:00:00', '2026-01-20 09:45:00', 'PROGRAMME', 1, 1, 1, 2), -- TNR -> NOS
+('AF202', '2026-01-21 10:00:00', '2026-01-21 14:00:00', 'PROGRAMME', 2, 2, 3, 1); -- CDG -> TNR
 
 -- =========================
--- RESERVATION
+-- TARIFS PAR CLASSE
 -- =========================
-INSERT INTO reservation (
-    id_passager,
-    id_vol,
-    id_classe,
-    numero_siege,
-    prix_paye,
-    date_reservation,
-    statut
-)
+INSERT INTO tarif_vol_classe (prix, places_disponibles, id_vol, id_classe)
 VALUES
-(1, 1, 1, '12A', 300.00, '2026-01-20 09:00:00', 'CONFIRMEE'),
-(2, 1, 2, '02B', 450.00, '2026-01-20 09:10:00', 'CONFIRMEE');
-
--- =========================
--- PAIEMENT
--- =========================
-INSERT INTO paiement (
-    id_reservation,
-    montant,
-    mode_paiement,
-    date_paiement,
-    statut
-)
-VALUES
-(1, 300.00, 'CARTE_BANCAIRE', '2026-01-20 09:05:00', 'VALIDE'),
-(2, 450.00, 'VIREMENT', '2026-01-20 09:15:00', 'VALIDE');
-
--- =========================
--- EMPLOYE
--- =========================
-INSERT INTO employe (
-    id_compagnie,
-    nom,
-    prenom,
-    email,
-    telephone,
-    date_embauche,
-    statut
-)
-VALUES
-(1, 'Andriamanitra', 'Paul', 'paul.andria@airalpha.com', '0320000001', '2020-01-10', 'ACTIF'),
-(1, 'Razafy', 'Luc', 'luc.razafy@airalpha.com', '0320000002', '2021-03-15', 'ACTIF');
-
--- =========================
--- AFFECTATION VOL
--- =========================
-INSERT INTO affectation_vol (id_vol, id_employe, role_vol)
-VALUES
-(1, 1, 'COMMANDANT'),
-(1, 2, 'CHEF_CABINE');
-
--- =========================
--- UTILISATEUR (ADMIN / AGENT)
--- =========================
-INSERT INTO utilisateur (
-    nom,
-    mot_de_passe,
-    role_systeme,
-    id_employe
-)
-VALUES
-('admin', 'test', 'ADMIN', 1),
-('agent', 'agent123', 'AGENT', 2);
+(700000, 120, 1, 1), -- 700 000 Ar pour la classe économique sur le vol MD101
+(1500000, 40, 1, 2), -- 1 500 000 Ar pour la classe business sur le vol MD101
+(500, 150, 2, 1),    -- 500 € pour la classe économique sur le vol AF202
+(1200, 30, 2, 2);    -- 1 200 € pour la classe business sur le vol AF202

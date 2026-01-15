@@ -31,4 +31,10 @@ public class TarifVolClasseService {
     public void deleteById(Long id) {
         tarifVolClasseRepository.deleteById(id);
     }
+
+    public List<TarifVolClasse> findByVolId(Long volId) {
+        List<TarifVolClasse> tarifs = tarifVolClasseRepository.findByVolId(volId);
+        System.out.println("Tarifs for volId " + volId + ": " + tarifs);
+        return tarifs;
+    }
 }
