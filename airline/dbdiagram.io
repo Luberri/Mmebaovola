@@ -1,60 +1,62 @@
-Table CompagnieAerienne {
-  id_compagnie int [pk, increment]
+Table compagnie_aerienne {
+  id bigint [pk, increment]
   nom varchar
+  code_iata varchar
   pays varchar
-  code_iata char(2)
-  code_icao char(3)
-  actif boolean
 }
 
-Table Aeroport {
-  id_aeroport int [pk, increment]
+Table aeroport {
+  id bigint [pk, increment]
   nom varchar
   ville varchar
   pays varchar
-  code_iata char(3)
-  code_icao char(4)
-  actif boolean
+  code_iata varchar
 }
 
-Table Avion {
-  id_avion int [pk, increment]
+Table avion {
+  id bigint [pk, increment]
   modele varchar
   capacite_totale int
   immatriculation varchar
   etat varchar
-  id_compagnie int [ref: > CompagnieAerienne.id_compagnie]
+  id_compagnie bigint [ref: > compagnie_aerienne.id]
 }
 
-Table ClasseVoyage {
-  id_classe int [pk, increment]
+Table classe_voyage {
+  id bigint [pk, increment]
   libelle varchar
-  ordre_affichage int
+  description varchar
 }
 
-Table Vol {
-  id_vol int [pk, increment]
+Table vol {
+  id bigint [pk, increment]
   numero_vol varchar
   date_heure_depart datetime
   date_heure_arrivee datetime
   statut varchar
-  id_compagnie int [ref: > CompagnieAerienne.id_compagnie]
-  id_avion int [ref: > Avion.id_avion]
-  id_aeroport_depart int [ref: > Aeroport.id_aeroport]
-  id_aeroport_arrivee int [ref: > Aeroport.id_aeroport]
+  id_compagnie bigint [ref: > compagnie_aerienne.id]
+  id_avion bigint [ref: > avion.id]
+  id_aeroport_depart bigint [ref: > aeroport.id]
+  id_aeroport_arrivee bigint [ref: > aeroport.id]
 }
 
-Table TarifVolClasse {
-  id_tarif int [pk, increment]
-  prix_base decimal
-  nombre_sieges int
-  sieges_restants int
-  id_vol int [ref: > Vol.id_vol]
-  id_classe int [ref: > ClasseVoyage.id_classe]
+Table capacite_avion_classe {
+  id bigint [pk, increment]
+  nbr_place int
+  id_classe bigint [ref: > classe_voyage.id]
+  id_avion bigint [ref: > avion.id]
 }
 
-Table Passager {
-  id_passager int [pk, increment]
+Table tarif_vol_classe {
+  id bigint [pk, increment]
+  prix decimal
+  places_disponibles int
+  id_vol bigint [ref: > vol.id]
+  id_classe bigint [ref: > classe_voyage.id]
+}
+
+Table passager {
+  id bigint [pk, increment]
   nom varchar
   prenom varchar
   numero_passeport varchar
@@ -62,60 +64,59 @@ Table Passager {
   telephone varchar
 }
 
-Table Reservation {
-  id_reservation int [pk, increment]
+Table reservation {
+  id bigint [pk, increment]
   numero_siege varchar
   prix_paye decimal
   date_reservation datetime
   statut varchar
-  id_passager int [ref: > Passager.id_passager]
-  id_vol int [ref: > Vol.id_vol]
-  id_classe int [ref: > ClasseVoyage.id_classe]
+  id_passager bigint [ref: > passager.id]
+  id_vol bigint [ref: > vol.id]
+  id_classe bigint [ref: > classe_voyage.id]
 }
 
-Table Paiement {
-  id_paiement int [pk, increment]
+Table paiement {
+  id bigint [pk, increment]
   montant decimal
   mode_paiement varchar
   date_paiement datetime
   statut varchar
-  id_reservation int [ref: > Reservation.id_reservation]
+  id_reservation bigint [ref: > reservation.id]
 }
 
-Table Employe {
-  id_employe int [pk, increment]
+Table employe {
+  id bigint [pk, increment]
   nom varchar
   prenom varchar
   email varchar
   telephone varchar
   date_embauche date
   statut varchar
-  id_compagnie int [ref: > CompagnieAerienne.id_compagnie]
+  id_compagnie bigint [ref: > compagnie_aerienne.id]
 }
 
-Table Poste {
-  id_poste int [pk, increment]
+Table poste {
+  id bigint [pk, increment]
   libelle varchar
 }
 
-Table EmployePoste {
-  id int [pk, increment]
-  id_employe int [ref: > Employe.id_employe]
-  id_poste int [ref: > Poste.id_poste]
+Table employe_poste {
+  id bigint [pk, increment]
+  id_employe bigint [ref: > employe.id]
+  id_poste bigint [ref: > poste.id]
 }
 
-Table AffectationVol {
-  id_affectation int [pk, increment]
+Table affectation_vol {
+  id bigint [pk, increment]
   role_vol varchar
-  id_vol int [ref: > Vol.id_vol]
-  id_employe int [ref: > Employe.id_employe]
+  id_vol bigint [ref: > vol.id]
+  id_employe bigint [ref: > employe.id]
 }
 
-Table Utilisateur {
-  id_utilisateur int [pk, increment]
+Table utilisateur {
+  id bigint [pk, increment]
   email varchar
   mot_de_passe varchar
   role_systeme varchar
-  actif boolean
-  id_employe int [ref: > Employe.id_employe]
+  id_employe bigint [ref: > employe.id]
 }
