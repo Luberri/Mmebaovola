@@ -26,6 +26,7 @@
                                 <th>Arrivée</th>
                                 <th>Date départ</th>
                                 <th>Date arrivée</th>
+                                <th>Revenu Max (€)</th> <!-- Nouvelle colonne -->
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -39,6 +40,13 @@
                                 <td th:text="${#temporals.format(vol.dateHeureDepart, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td th:text="${#temporals.format(vol.dateHeureArrivee, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
+                                    <span th:if="${maxRevenues[vol.id] != null}" th:text="${maxRevenues[vol.id]}"></span>
+                                    <span th:if="${maxRevenues[vol.id] == null}">N/A</span> <!-- Affiche "N/A" si la valeur est null -->
+                                </td>
+                                <td>
+                                    <a th:href="@{/vols/{id}/revenue(id=${vol.id})}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-cash-stack"></i> Voir Revenu Max
+                                    </a>
                                     <a th:href="@{/vols/edit/{id}(id=${vol.id})}" class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil"></i> Modifier
                                     </a>
@@ -50,7 +58,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(vols)}">
-                                <td colspan="8" class="text-center text-muted">
+                                <td colspan="9" class="text-center text-muted">
                                     <i class="bi bi-inbox"></i> Aucun vol trouvé
                                 </td>
                             </tr>

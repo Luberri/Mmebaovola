@@ -43,4 +43,12 @@ public class Vol {
 
     @OneToMany(mappedBy = "vol")
     private List<AffectationVol> affectations;
+
+    public Avion getAvion() {
+        return avion;
+    }
+
+    public Long getId() {
+        return id;
+    }
 }

@@ -24,4 +24,20 @@ public class TarifVolClasse {
     private BigDecimal prix;
     
     private Integer placesDisponibles;
+
+    public BigDecimal getPrix() {
+        return prix;
+    }
+
+    public void setPrix(BigDecimal prix) {
+        this.prix = prix;
+    }
+
+    public Integer getPlacesDisponibles() {
+        return placesDisponibles;
+    }
+
+    public void setPlacesDisponibles(Integer placesDisponibles) {
+        this.placesDisponibles = placesDisponibles;
+    }
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{Nav :: head(title='Revenu Maximum')}"></head>
+<body>
+    <nav th:replace="~{Nav :: navbar}"></nav>
+    
+    <div class="container mt-4">
+        <h1><i class="bi bi-cash-stack"></i> Revenu Maximum</h1>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h3>Vol : <span th:text="${vol.numeroVol}"></span></h3>
+                <p>Compagnie : <span th:text="${vol.compagnie?.nom}"></span></p>
+                <p>Avion : <span th:text="${vol.avion?.modele}"></span></p>
+                <p>Départ : <span th:text="${vol.aeroportDepart?.nom}"></span></p>
+                <p>Arrivée : <span th:text="${vol.aeroportArrivee?.nom}"></span></p>
+                <p>Date de départ : <span th:text="${#temporals.format(vol.dateHeureDepart, 'dd/MM/yyyy HH:mm')}"></span></p>
+                <p>Date d'arrivée : <span th:text="${#temporals.format(vol.dateHeureArrivee, 'dd/MM/yyyy HH:mm')}"></span></p>
+                <hr>
+                <h4>Revenu Maximum : <span th:text="${maxRevenue}"></span> €</h4>
+            </div>
+        </div>
+        <a th:href="@{/vols}" class="btn btn-secondary mt-3">
+            <i class="bi bi-arrow-left"></i> Retour à la liste des vols
+        </a>
+    </div>
+    
+    <footer th:replace="~{Nav :: footer}"></footer>
+    <div th:replace="~{Nav :: scripts}"></div>
+</body>
+</html>

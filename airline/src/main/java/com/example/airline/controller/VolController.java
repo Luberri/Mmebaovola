@@ -7,6 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Controller
 @RequestMapping("/vols")
 public class VolController {
@@ -26,7 +31,11 @@ public class VolController {
 
     @GetMapping
     public String list(Model model) {
-        model.addAttribute("vols", volService.findAll());
+        List<Vol> vols = volService.findAll();
+        Map<Long, BigDecimal> maxRevenues = vols.stream()
+                .collect(Collectors.toMap(Vol::getId, volService::calculateMaxRevenueForVol));
+        model.addAttribute("vols", vols);
+        model.addAttribute("maxRevenues", maxRevenues);
         // The template 'vols/list' now uses Nav.html as layout
         return "vols/list";
     }
@@ -59,5 +68,14 @@ public class VolController {
     public String delete(@PathVariable Long id) {
         volService.deleteById(id);
         return "redirect:/vols";
+    }
+
+    @GetMapping("/{id}/revenue")
+    public String showMaxRevenue(@PathVariable Long id, Model model) {
+        Vol vol = volService.findById(id).orElseThrow(() -> new IllegalArgumentException("Vol introuvable avec l'ID : " + id));
+        BigDecimal maxRevenue = volService.calculateMaxRevenueForVol(vol);
+        model.addAttribute("vol", vol);
+        model.addAttribute("maxRevenue", maxRevenue);
+        return "vols/revenue";
     }
 }

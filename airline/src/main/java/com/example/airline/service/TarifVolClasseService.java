@@ -1,6 +1,8 @@
 package com.example.airline.service;
 
+import com.example.airline.model.ClasseVoyage;
 import com.example.airline.model.TarifVolClasse;
+import com.example.airline.model.Vol;
 import com.example.airline.repository.TarifVolClasseRepository;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +32,9 @@ public class TarifVolClasseService {
 
     public void deleteById(Long id) {
         tarifVolClasseRepository.deleteById(id);
+    }
+
+    public Optional<TarifVolClasse> findByVolAndClasse(Vol vol, ClasseVoyage classe) {
+        return tarifVolClasseRepository.findByVolAndClasseVoyage(vol, classe);
     }
 }
