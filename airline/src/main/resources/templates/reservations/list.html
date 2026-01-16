@@ -26,6 +26,7 @@
                                 <th>Prix payé</th>
                                 <th>Date réservation</th>
                                 <th>Statut</th>
+                                <th>Type Tarif</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -45,6 +46,7 @@
                                     <span th:if="${reservation.statut != null and reservation.statut.name() == 'EN_ATTENTE'}" class="badge bg-warning text-dark">En attente</span>
                                     <span th:if="${reservation.statut != null and reservation.statut.name() == 'ANNULEE'}" class="badge bg-danger">Annulée</span>
                                 </td>
+                                <td th:text="${reservation.typeTarif != null ? reservation.typeTarif.libelle : '-'}"></td>
                                 <td>
                                     <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil"></i> Modifier
@@ -57,7 +59,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(reservations)}">
-                                <td colspan="9" class="text-center text-muted">
+                                <td colspan="10" class="text-center text-muted">
                                     <i class="bi bi-inbox"></i> Aucune réservation trouvée
                                 </td>
                             </tr>

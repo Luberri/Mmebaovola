@@ -74,6 +74,18 @@
             </div>
         </div>
         
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label for="typeTarif" class="form-label">Type de Tarif</label>
+                <select class="form-select" id="typeTarif" name="typeTarif.id" required>
+                    <option value="">-- Sélectionner --</option>
+                    <option th:each="t : ${typesTarif}" th:value="${t.id}"
+                            th:selected="${reservation.typeTarif != null and reservation.typeTarif.id == t.id}"
+                            th:text="${t.libelle}"></option>
+                </select>
+            </div>
+        </div>
+        
         <button type="submit" class="btn btn-primary">Enregistrer</button>
         <a th:href="@{/reservations}" class="btn btn-secondary">Annuler</a>
     </form>

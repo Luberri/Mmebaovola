@@ -15,13 +15,16 @@ public class ReservationController {
     private final PassagerService passagerService;
     private final VolService volService;
     private final ClasseVoyageService classeVoyageService;
+    private final TypeTarifService typeTarifService;
 
     public ReservationController(ReservationService reservationService, PassagerService passagerService,
-                                  VolService volService, ClasseVoyageService classeVoyageService) {
+                                  VolService volService, ClasseVoyageService classeVoyageService,
+                                  TypeTarifService typeTarifService) {
         this.reservationService = reservationService;
         this.passagerService = passagerService;
         this.volService = volService;
         this.classeVoyageService = classeVoyageService;
+        this.typeTarifService = typeTarifService;
     }
 
     @GetMapping
@@ -37,6 +40,7 @@ public class ReservationController {
         model.addAttribute("passagers", passagerService.findAll());
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());
+        model.addAttribute("typesTarif", typeTarifService.findAll());
         return "reservations/form";
     }
 
@@ -52,6 +56,7 @@ public class ReservationController {
         model.addAttribute("passagers", passagerService.findAll());
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());
+        model.addAttribute("typesTarif", typeTarifService.findAll());
         return "reservations/form";
     }
 

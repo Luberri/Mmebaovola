@@ -32,4 +32,8 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "id_classe")
     private ClasseVoyage classe;
+
+    @ManyToOne
+    @JoinColumn(name = "id_type_tarif")
+    private TypeTarif typeTarif;
 }
