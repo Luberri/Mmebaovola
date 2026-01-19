@@ -1,25 +1,24 @@
 package com.example.airline.controller;
 
-import com.example.airline.model.TarifVolClasse;
-import com.example.airline.model.Vol;
-import com.example.airline.service.TarifVolClasseService;
-import com.example.airline.service.VolService;
+import com.example.airline.model.TarifVolClasseType;
 import com.example.airline.service.ClasseVoyageService;
+import com.example.airline.service.TarifVolClasseTypeService;
+import com.example.airline.service.VolService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/tarifs")
-public class TarifVolClasseController {
+public class TarifVolClasseTypeController {
 
-    private final TarifVolClasseService tarifService;
+    private final TarifVolClasseTypeService tarifService;
     private final VolService volService;
     private final ClasseVoyageService classeVoyageService;
 
-    public TarifVolClasseController(TarifVolClasseService tarifService,
-                                     VolService volService,
-                                     ClasseVoyageService classeVoyageService) {
+    public TarifVolClasseTypeController(TarifVolClasseTypeService tarifService,
+                                        VolService volService,
+                                        ClasseVoyageService classeVoyageService) {
         this.tarifService = tarifService;
         this.volService = volService;
         this.classeVoyageService = classeVoyageService;
@@ -32,22 +31,24 @@ public class TarifVolClasseController {
     }
 
     @GetMapping("/new")
-    public String createForm(@RequestParam(required = false) Long volId, Model model) {
-        TarifVolClasse tarif = new TarifVolClasse();
-        
-        // Pré-sélectionner le vol si volId est fourni
-        // if (volId != null) {
-        //     volService.findById(volId).ifPresent(tarif::setVol);
-        // }
-        
-        model.addAttribute("tarif", tarif);
+    public String createForm(Model model) {
+        model.addAttribute("tarif", new TarifVolClasseType());
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());
+        model.addAttribute("tarifsReference", tarifService.findAll()); // Pour la liste de référence
         return "tarifs/form";
     }
 
     @PostMapping
-    public String save(@ModelAttribute TarifVolClasse tarif) {
+    public String save(@ModelAttribute TarifVolClasseType tarif,
+                       @RequestParam(required = false) Long tarifReferenceId) {
+        // Si un tarif de référence est sélectionné, le charger
+        if (tarifReferenceId != null) {
+            tarifService.findById(tarifReferenceId).ifPresent(tarif::setTarifReference);
+        } else {
+            tarif.setTarifReference(null);
+            tarif.setPourcentage(null);
+        }
         tarifService.save(tarif);
         return "redirect:/tarifs";
     }
@@ -57,6 +58,7 @@ public class TarifVolClasseController {
         tarifService.findById(id).ifPresent(tarif -> model.addAttribute("tarif", tarif));
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());
+        model.addAttribute("tarifsReference", tarifService.findAll());
         return "tarifs/form";
     }
 

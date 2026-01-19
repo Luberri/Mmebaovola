@@ -1,6 +1,7 @@
 package com.example.airline.service;
 
 import com.example.airline.model.Reservation;
+import com.example.airline.model.Vol;
 import com.example.airline.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,9 @@ public class ReservationService {
 
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
+    }
+    public List<Reservation> findByVol(Vol vol) {
+        return reservationRepository.findByVol(vol);
     }
 
     public Optional<Reservation> findById(Long id) {

@@ -36,7 +36,7 @@ public class Vol {
     private Aeroport aeroportArrivee;
 
     @OneToMany(mappedBy = "vol")
-    private List<TarifVolClasse> tarifs;
+    private List<TarifVolClasseType> tarifs;
 
     @OneToMany(mappedBy = "vol")
     private List<Reservation> reservations;
@@ -44,11 +44,6 @@ public class Vol {
     @OneToMany(mappedBy = "vol")
     private List<AffectationVol> affectations;
 
-    public Avion getAvion() {
-        return avion;
-    }
-
-    public Long getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "vol")
+    private List<CapaciteAvionClasse> capacites;
 }

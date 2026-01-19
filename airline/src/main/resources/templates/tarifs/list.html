@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container mt-4">
-    <h1 class="mb-4">Liste des Tarifs par Vol et Classe</h1>
+    <h1 class="mb-4">Liste des Tarifs par Vol, Classe et Type</h1>
     
     <a th:href="@{/tarifs/new}" class="btn btn-primary mb-3">
         <i class="bi bi-plus"></i> Nouveau Tarif
@@ -20,8 +20,10 @@
                 <th>ID</th>
                 <th>Vol</th>
                 <th>Classe</th>
+                <th>Type</th>
                 <th>Prix</th>
-                <th>Places Disponibles</th>
+                <th>Basé sur</th>
+                <th>Pourcentage</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -29,9 +31,23 @@
             <tr th:each="tarif : ${tarifs}">
                 <td th:text="${tarif.id}"></td>
                 <td th:text="${tarif.vol != null ? tarif.vol.numeroVol : '-'}"></td>
-                <td th:text="${tarif.classeVoyage != null ? tarif.classeVoyage.libelle : '-'}"></td>
-                <td><span th:text="${tarif.prix != null ? #numbers.formatDecimal(tarif.prix, 0, 2) : '0.00'}"></span> €</td>
-                <td th:text="${tarif.placesDisponibles}"></td>
+                <td th:text="${tarif.classe != null ? tarif.classe.libelle : '-'}"></td>
+                <td th:text="${tarif.type}"></td>
+                <td>
+                    <span th:text="${tarif.prix != null ? #numbers.formatDecimal(tarif.prix, 0, 2) : '0.00'}"></span> Ar
+                </td>
+                <td>
+                    <span th:if="${tarif.tarifReference != null}" class="badge bg-info">
+                        <span th:text="${tarif.tarifReference.vol.numeroVol + ' / ' + tarif.tarifReference.classe.libelle + ' / ' + tarif.tarifReference.type}"></span>
+                    </span>
+                    <span th:if="${tarif.tarifReference == null}" class="text-muted">-</span>
+                </td>
+                <td>
+                    <span th:if="${tarif.pourcentage != null}" class="badge bg-warning text-dark">
+                        <span th:text="${tarif.pourcentage + '%'}"></span>
+                    </span>
+                    <span th:if="${tarif.pourcentage == null}" class="text-muted">-</span>
+                </td>
                 <td>
                     <a th:href="@{/tarifs/edit/{id}(id=${tarif.id})}" 
                        class="btn btn-sm btn-warning">Modifier</a>
@@ -41,7 +57,7 @@
                 </td>
             </tr>
             <tr th:if="${#lists.isEmpty(tarifs)}">
-                <td colspan="6" class="text-center">Aucun tarif trouvé</td>
+                <td colspan="8" class="text-center">Aucun tarif trouvé</td>
             </tr>
         </tbody>
     </table>

@@ -16,7 +16,4 @@ public class Aeroport {
     private String ville;
     private String pays;
     private String codeIata;
-    private String codeIcao;
-    private Boolean actif;
-
 }

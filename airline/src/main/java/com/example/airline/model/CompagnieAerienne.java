@@ -14,10 +14,8 @@ public class CompagnieAerienne {
     private Long id;
 
     private String nom;
-    private String pays;
     private String codeIata;
-    private String codeIcao;
-    private Boolean actif;
+    private String pays;
 
     @OneToMany(mappedBy = "compagnie")
     private List<Avion> avions;

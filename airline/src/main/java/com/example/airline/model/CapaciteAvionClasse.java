@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "capacite_avion_classe")
+@Table(name = "capacite_avion_classe_vol")
 @Data
 public class CapaciteAvionClasse {
 
@@ -19,8 +19,8 @@ public class CapaciteAvionClasse {
     private ClasseVoyage classe;
 
     @ManyToOne
-    @JoinColumn(name = "id_avion", nullable = false)
-    private Avion avion;
+    @JoinColumn(name = "id_vol", nullable = false)
+    private Vol vol;
 
     public Integer getNbrPlace() {
         return nbrPlace;

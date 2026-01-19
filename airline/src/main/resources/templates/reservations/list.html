@@ -35,10 +35,10 @@
                                 <td th:text="${reservation.id}"></td>
                                 <td th:text="${reservation.passager != null ? reservation.passager.nom + ' ' + reservation.passager.prenom : '-'}"></td>
                                 <td th:text="${reservation.vol != null ? reservation.vol.numeroVol : '-'}"></td>
-                                <td th:text="${reservation.classe != null ? reservation.classe.libelle : '-'}"></td>
+                                <td th:text="${reservation.tarifVolClasseType != null && reservation.tarifVolClasseType.classe != null ? reservation.tarifVolClasseType.classe.libelle : (reservation.classe != null ? reservation.classe.libelle : '-')}" ></td>
                                 <td th:text="${reservation.numeroSiege}"></td>
                                 <td>
-                                    <span th:text="${reservation.prixPaye != null ? #numbers.formatDecimal(reservation.prixPaye, 0, 2) : '0.00'}"></span> €
+                                    <span th:text="${reservation.tarifVolClasseType.prix != null ? #numbers.formatDecimal(reservation.tarifVolClasseType.prix, 0, 2) : '0.00'}"></span> €
                                 </td>
                                 <td th:text="${reservation.dateReservation != null ? #temporals.format(reservation.dateReservation, 'dd/MM/yyyy HH:mm') : '-'}"></td>
                                 <td>
@@ -46,7 +46,7 @@
                                     <span th:if="${reservation.statut != null and reservation.statut.name() == 'EN_ATTENTE'}" class="badge bg-warning text-dark">En attente</span>
                                     <span th:if="${reservation.statut != null and reservation.statut.name() == 'ANNULEE'}" class="badge bg-danger">Annulée</span>
                                 </td>
-                                <td th:text="${reservation.typeTarif != null ? reservation.typeTarif.libelle : '-'}"></td>
+                                <td th:text="${reservation.tarifVolClasseType != null ? reservation.tarifVolClasseType.type : '-'}"></td>
                                 <td>
                                     <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" class="btn btn-sm btn-warning">
                                         <i class="bi bi-pencil"></i> Modifier

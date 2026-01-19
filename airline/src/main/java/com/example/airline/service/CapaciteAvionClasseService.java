@@ -2,6 +2,8 @@ package com.example.airline.service;
 
 import com.example.airline.model.Avion;
 import com.example.airline.model.CapaciteAvionClasse;
+import com.example.airline.model.ClasseVoyage;
+import com.example.airline.model.Vol;
 import com.example.airline.repository.CapaciteAvionClasseRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,17 @@ public class CapaciteAvionClasseService {
     public CapaciteAvionClasseService(CapaciteAvionClasseRepository capaciteAvionClasseRepository) {
         this.capaciteAvionClasseRepository = capaciteAvionClasseRepository;
     }
+       public CapaciteAvionClasse findByVolAndClasse(Vol vol, ClasseVoyage classe) {
+           List<CapaciteAvionClasse> list = capaciteAvionClasseRepository.findByVol(vol);
+           if (list != null) {
+               for (CapaciteAvionClasse cap : list) {
+                   if (cap.getClasse().equals(classe)) {
+                       return cap;
+                   }
+               }
+           }
+           return null;
+       }
 
     public List<CapaciteAvionClasse> findAll() {
         return capaciteAvionClasseRepository.findAll();
@@ -33,7 +46,7 @@ public class CapaciteAvionClasseService {
         capaciteAvionClasseRepository.deleteById(id);
     }
 
-    public List<CapaciteAvionClasse> findByAvion(Avion avion) {
-        return capaciteAvionClasseRepository.findByAvion(avion);
+    public List<CapaciteAvionClasse> findByVol(Vol vol) {
+        return capaciteAvionClasseRepository.findByVol(vol);
     }
 }

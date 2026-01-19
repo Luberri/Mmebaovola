@@ -15,22 +15,25 @@ public class ReservationController {
     private final PassagerService passagerService;
     private final VolService volService;
     private final ClasseVoyageService classeVoyageService;
-    private final TypeTarifService typeTarifService;
+    private final TarifVolClasseTypeService tarifVolClasseTypeService;
 
-    public ReservationController(ReservationService reservationService, PassagerService passagerService,
-                                  VolService volService, ClasseVoyageService classeVoyageService,
-                                  TypeTarifService typeTarifService) {
+    public ReservationController(
+        ReservationService reservationService,
+        PassagerService passagerService,
+        VolService volService,
+        ClasseVoyageService classeVoyageService,
+        TarifVolClasseTypeService tarifVolClasseTypeService
+    ) {
         this.reservationService = reservationService;
         this.passagerService = passagerService;
         this.volService = volService;
         this.classeVoyageService = classeVoyageService;
-        this.typeTarifService = typeTarifService;
+        this.tarifVolClasseTypeService = tarifVolClasseTypeService;
     }
 
     @GetMapping
     public String list(Model model) {
         model.addAttribute("reservations", reservationService.findAll());
-        // The template 'reservations/list' now uses Nav.html as layout
         return "reservations/list";
     }
 
@@ -40,7 +43,7 @@ public class ReservationController {
         model.addAttribute("passagers", passagerService.findAll());
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());
-        model.addAttribute("typesTarif", typeTarifService.findAll());
+        model.addAttribute("tarifs", tarifVolClasseTypeService.findAll());
         return "reservations/form";
     }
 
@@ -56,7 +59,7 @@ public class ReservationController {
         model.addAttribute("passagers", passagerService.findAll());
         model.addAttribute("vols", volService.findAll());
         model.addAttribute("classes", classeVoyageService.findAll());
-        model.addAttribute("typesTarif", typeTarifService.findAll());
+        model.addAttribute("tarifs", tarifVolClasseTypeService.findAll());
         return "reservations/form";
     }
 

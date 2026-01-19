@@ -40,17 +40,17 @@ Table vol {
   id_aeroport_arrivee bigint [ref: > aeroport.id]
 }
 
-Table capacite_avion_classe {
+Table capacite_avion_classe_vol {
   id bigint [pk, increment]
   nbr_place int
+  id_vol bigint [ref: > vol.id]
   id_classe bigint [ref: > classe_voyage.id]
-  id_avion bigint [ref: > avion.id]
 }
 
-Table tarif_vol_classe {
+Table tarif_vol_classe_type {
   id bigint [pk, increment]
   prix decimal
-  places_disponibles int
+  type varchar
   id_vol bigint [ref: > vol.id]
   id_classe bigint [ref: > classe_voyage.id]
 }
@@ -67,12 +67,12 @@ Table passager {
 Table reservation {
   id bigint [pk, increment]
   numero_siege varchar
-  prix_paye decimal
   date_reservation datetime
   statut varchar
   id_passager bigint [ref: > passager.id]
   id_vol bigint [ref: > vol.id]
   id_classe bigint [ref: > classe_voyage.id]
+  id_type_vol_classe bigint [ref: > tarif_vol_classe_type.id]
 }
 
 Table paiement {
@@ -82,41 +82,4 @@ Table paiement {
   date_paiement datetime
   statut varchar
   id_reservation bigint [ref: > reservation.id]
-}
-
-Table employe {
-  id bigint [pk, increment]
-  nom varchar
-  prenom varchar
-  email varchar
-  telephone varchar
-  date_embauche date
-  statut varchar
-  id_compagnie bigint [ref: > compagnie_aerienne.id]
-}
-
-Table poste {
-  id bigint [pk, increment]
-  libelle varchar
-}
-
-Table employe_poste {
-  id bigint [pk, increment]
-  id_employe bigint [ref: > employe.id]
-  id_poste bigint [ref: > poste.id]
-}
-
-Table affectation_vol {
-  id bigint [pk, increment]
-  role_vol varchar
-  id_vol bigint [ref: > vol.id]
-  id_employe bigint [ref: > employe.id]
-}
-
-Table utilisateur {
-  id bigint [pk, increment]
-  email varchar
-  mot_de_passe varchar
-  role_systeme varchar
-  id_employe bigint [ref: > employe.id]
 }

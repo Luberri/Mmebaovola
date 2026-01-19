@@ -1,7 +1,8 @@
 package com.example.airline.service;
 
 import com.example.airline.model.CapaciteAvionClasse;
-import com.example.airline.model.TarifVolClasse;
+import com.example.airline.model.Reservation;
+import com.example.airline.model.TarifVolClasseType;
 import com.example.airline.model.Vol;
 import com.example.airline.repository.VolRepository;
 import org.springframework.stereotype.Service;
@@ -14,14 +15,18 @@ import java.util.Optional;
 public class VolService {
 
     private final VolRepository volRepository;
-    private final TarifVolClasseService tarifVolClasseService;
     private final CapaciteAvionClasseService capaciteAvionClasseService;
+    private final TarifVolClasseTypeService tarifVolClasseTypeService;
+    private final ReservationService reservationService;
 
-    public VolService(VolRepository volRepository, TarifVolClasseService tarifVolClasseService,
-                      CapaciteAvionClasseService capaciteAvionClasseService) {
+    public VolService(VolRepository volRepository, 
+                      CapaciteAvionClasseService capaciteAvionClasseService,
+                      TarifVolClasseTypeService tarifVolClasseTypeService,
+                        ReservationService reservationService) {
         this.volRepository = volRepository;
-        this.tarifVolClasseService = tarifVolClasseService;
         this.capaciteAvionClasseService = capaciteAvionClasseService;
+        this.tarifVolClasseTypeService = tarifVolClasseTypeService;
+        this.reservationService = reservationService;
     }
 
     public List<Vol> findAll() {
@@ -40,22 +45,46 @@ public class VolService {
         volRepository.deleteById(id);
     }
 
-    public BigDecimal calculateMaxRevenueForVol(Vol vol) {
-        BigDecimal maxRevenue = BigDecimal.ZERO;
+public BigDecimal calculateMaxRevenueForVol(Vol vol) {
+    BigDecimal totalRevenue = BigDecimal.ZERO;
 
-        // Récupérer les capacités des classes pour l'avion du vol
-        List<CapaciteAvionClasse> capacites = capaciteAvionClasseService.findByAvion(vol.getAvion());
+    // 1️⃣ Récupérer toutes les réservations déjà effectuées pour ce vol
+    List<Reservation> reservations = reservationService.findByVol(vol);
 
-        for (CapaciteAvionClasse capacite : capacites) {
-            // Récupérer le tarif pour chaque classe
-            Optional<TarifVolClasse> tarif = tarifVolClasseService.findByVolAndClasse(vol, capacite.getClasse());
-            if (tarif.isPresent()) {
-                // Calculer le revenu pour cette classe
-                BigDecimal revenueForClass = tarif.get().getPrix().multiply(BigDecimal.valueOf(capacite.getNbrPlace()));
-                maxRevenue = maxRevenue.add(revenueForClass);
+    // 2️⃣ Calculer le revenu des réservations existantes
+    BigDecimal reservationRevenue = BigDecimal.ZERO;
+    for (Reservation reservation : reservations) {
+        if (reservation.getTarifVolClasseType() != null &&
+            reservation.getTarifVolClasseType().getPrix() != null) {
+            reservationRevenue = reservationRevenue.add(reservation.getTarifVolClasseType().getPrix());
+        }
+    }
+
+    // 3️⃣ Pour chaque classe, calculer le revenu potentiel avec le tarif type='N'
+    List<CapaciteAvionClasse> capacites = capaciteAvionClasseService.findByVol(vol);
+    for (CapaciteAvionClasse cap : capacites) {
+        // Trouver le tarif 'N' pour cette classe
+        TarifVolClasseType tarifNormal = tarifVolClasseTypeService
+            .findByVolAndClasseAndType(vol, cap.getClasse(), "N");
+        if (tarifNormal != null && cap.getNbrPlace() > 0) {
+            // Compter les réservations sur cette classe
+            long placesReservees = reservations.stream()
+                .filter(r -> r.getTarifVolClasseType() != null &&
+                             r.getTarifVolClasseType().getClasse().equals(cap.getClasse()))
+                .count();
+            int placesRestantes = cap.getNbrPlace() - (int) placesReservees;
+            if (placesRestantes > 0) {
+                BigDecimal revenueRestant = tarifNormal.getPrix()
+                    .multiply(BigDecimal.valueOf(placesRestantes));
+                totalRevenue = totalRevenue.add(revenueRestant);
             }
         }
-
-        return maxRevenue;
     }
+
+    // 4️⃣ Ajouter le revenu des réservations déjà effectuées
+    totalRevenue = totalRevenue.add(reservationRevenue);
+
+    return totalRevenue;
+}
+
 }

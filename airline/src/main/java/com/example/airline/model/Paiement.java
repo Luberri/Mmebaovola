@@ -5,6 +5,7 @@ import com.example.airline.model.enums.StatutPaiement;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "paiement")
@@ -15,7 +16,7 @@ public class Paiement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double montant;
+    private BigDecimal montant;
 
     @Enumerated(EnumType.STRING)
     private ModePaiement modePaiement;

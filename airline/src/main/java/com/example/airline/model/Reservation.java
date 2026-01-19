@@ -15,7 +15,6 @@ public class Reservation {
     private Long id;
 
     private String numeroSiege;
-    private Double prixPaye;
     private LocalDateTime dateReservation;
 
     @Enumerated(EnumType.STRING)
@@ -34,6 +33,6 @@ public class Reservation {
     private ClasseVoyage classe;
 
     @ManyToOne
-    @JoinColumn(name = "id_type_tarif")
-    private TypeTarif typeTarif;
+    @JoinColumn(name = "id_type_vol_classe")
+    private TarifVolClasseType tarifVolClasseType;
 }
