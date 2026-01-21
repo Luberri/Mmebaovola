@@ -63,16 +63,16 @@ public BigDecimal calculateMaxRevenueForVol(Vol vol) {
     // 3️⃣ Pour chaque classe, calculer le revenu potentiel avec le tarif type='N'
     List<CapaciteAvionClasse> capacites = capaciteAvionClasseService.findByVol(vol);
     for (CapaciteAvionClasse cap : capacites) {
-        // Trouver le tarif 'N' pour cette classe
         TarifVolClasseType tarifNormal = tarifVolClasseTypeService
             .findByVolAndClasseAndType(vol, cap.getClasse(), "N");
         if (tarifNormal != null && cap.getNbrPlace() > 0) {
-            // Compter les réservations sur cette classe
-            long placesReservees = reservations.stream()
+            // Compter les sièges réservés sur cette classe
+            long siegesReserves = reservations.stream()
                 .filter(r -> r.getTarifVolClasseType() != null &&
                              r.getTarifVolClasseType().getClasse().equals(cap.getClasse()))
+                .flatMap(r -> r.getReservationSieges().stream())
                 .count();
-            int placesRestantes = cap.getNbrPlace() - (int) placesReservees;
+            int placesRestantes = cap.getNbrPlace() - (int) siegesReserves;
             if (placesRestantes > 0) {
                 BigDecimal revenueRestant = tarifNormal.getPrix()
                     .multiply(BigDecimal.valueOf(placesRestantes));

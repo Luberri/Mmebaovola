@@ -10,6 +10,9 @@
 <div class="container mt-4">
     <h1 class="mb-4" th:text="${reservation.id != null} ? 'Modifier Réservation' : 'Nouvelle Réservation'"></h1>
     
+    <!-- Affichage de l'erreur si siège déjà réservé -->
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    
     <form th:action="@{/reservations}" th:object="${reservation}" method="post">
         <input type="hidden" th:field="*{id}">
         
@@ -35,8 +38,8 @@
         
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label for="numeroSiege" class="form-label">Numéro de Siège</label>
-                <input type="text" class="form-control" id="numeroSiege" th:field="*{numeroSiege}" required>
+                <label for="numSieges" class="form-label">Numéros de Sièges (séparés par des virgules)</label>
+                <input type="text" class="form-control" id="numSieges" name="numSieges" th:value="${numSieges}" required>
             </div>
             
             <div class="col-md-6 mb-3">

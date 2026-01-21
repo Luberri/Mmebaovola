@@ -4,6 +4,7 @@ import com.example.airline.model.enums.StatutReservation;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "reservation")
@@ -14,7 +15,6 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String numeroSiege;
     private LocalDateTime dateReservation;
 
     @Enumerated(EnumType.STRING)
@@ -35,4 +35,7 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "id_type_vol_classe")
     private TarifVolClasseType tarifVolClasseType;
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReservationSiege> reservationSieges;
 }

@@ -36,7 +36,10 @@
                                 <td th:text="${reservation.passager != null ? reservation.passager.nom + ' ' + reservation.passager.prenom : '-'}"></td>
                                 <td th:text="${reservation.vol != null ? reservation.vol.numeroVol : '-'}"></td>
                                 <td th:text="${reservation.tarifVolClasseType != null && reservation.tarifVolClasseType.classe != null ? reservation.tarifVolClasseType.classe.libelle : (reservation.classe != null ? reservation.classe.libelle : '-')}" ></td>
-                                <td th:text="${reservation.numeroSiege}"></td>
+                                <td>
+                                    <span th:each="siege, iterStat : ${reservation.reservationSieges}"
+                                          th:text="${siege.numSiege + (iterStat.last ? '' : ', ')}"></span>
+                                </td>
                                 <td>
                                     <span th:text="${reservation.tarifVolClasseType.prix != null ? #numbers.formatDecimal(reservation.tarifVolClasseType.prix, 0, 2) : '0.00'}"></span> €
                                 </td>
