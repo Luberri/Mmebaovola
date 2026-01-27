@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrats Publicitaires</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4"><i class="bi bi-megaphone"></i> Contrats Publicitaires</h1>
+    
+    <a th:href="@{/pub-contrats/new}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus"></i> Nouveau Contrat
+    </a>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Société</th>
+                <th>Date Début</th>
+                <th>Date Fin</th>
+                <th>Description</th>
+                <th>Nbr Diffusions</th>
+                <th>Prix Unitaire</th>
+                <th>Montant Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="contrat : ${contrats}">
+                <td th:text="${contrat.id}"></td>
+                <td th:text="${contrat.societe?.nom}"></td>
+                <td th:text="${#temporals.format(contrat.dateDebut, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#temporals.format(contrat.dateFin, 'dd/MM/yyyy')}"></td>
+                <td th:text="${contrat.description}"></td>
+                <td th:text="${contrat.nbrDiffusion}"></td>
+                <td th:text="${contrat.configurationPrix != null ? #numbers.formatDecimal(contrat.configurationPrix.prix, 0, 2) + ' Ar' : '-'}"></td>
+                <td>
+                    <span class="badge bg-success" th:text="${montantsTotaux[contrat.id] != null ? #numbers.formatDecimal(montantsTotaux[contrat.id], 0, 2) + ' Ar' : '-'}"></span>
+                </td>
+                <td>
+                    <a th:href="@{/pub-contrats/edit/{id}(id=${contrat.id})}" 
+                       class="btn btn-sm btn-warning">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                    <a th:href="@{/pub-contrats/delete/{id}(id=${contrat.id})}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce contrat ?')">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(contrats)}">
+                <td colspan="9" class="text-center">Aucun contrat trouvé</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

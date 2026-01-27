@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Service
 public class PassagerService {
-
+    
     private final PassagerRepository passagerRepository;
 
     public PassagerService(PassagerRepository passagerRepository) {

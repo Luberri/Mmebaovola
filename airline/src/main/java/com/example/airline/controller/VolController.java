@@ -3,11 +3,13 @@ package com.example.airline.controller;
 
 import com.example.airline.model.Vol;
 import com.example.airline.service.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,13 +32,77 @@ public class VolController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        List<Vol> vols = volService.findAll();
-        Map<Long, BigDecimal> maxRevenues = vols.stream()
-                .collect(Collectors.toMap(Vol::getId, volService::calculateMaxRevenueForVol));
+    public String list(Model model,
+                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
+                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin) {
+        
+        List<Vol> vols;
+        
+        // Filtrer par date si les paramètres sont fournis
+        if (dateDebut != null && dateFin != null) {
+            vols = volService.findByDateRange(dateDebut, dateFin);
+        } else if (dateDebut != null) {
+            vols = volService.findByDateFrom(dateDebut);
+        } else if (dateFin != null) {
+            vols = volService.findByDateTo(dateFin);
+        } else {
+            vols = volService.findAll();
+        }
+        
+        // Total généré par les réservations (billets vendus)
+        Map<Long, BigDecimal> revenusReservations = vols.stream()
+                .collect(Collectors.toMap(Vol::getId, volService::calculateReservationRevenue));
+        
+        // Montants estimés des diffusions pub (nbrDiffusion * prix unitaire)
+        Map<Long, BigDecimal> pubEstimatedRevenues = vols.stream()
+                .collect(Collectors.toMap(Vol::getId, volService::calculateEstimatedPubRevenueForVol));
+        
+        // Montants déjà payés pour les diffusions pub
+        Map<Long, BigDecimal> pubPaidRevenues = vols.stream()
+                .collect(Collectors.toMap(Vol::getId, volService::calculateActualPubRevenueForVol));
+        
+        // Reste à payer pour les diffusions pub
+        Map<Long, BigDecimal> pubRemainingRevenues = vols.stream()
+                .collect(Collectors.toMap(Vol::getId, volService::calculateRemainingPubRevenueForVol));
+        
+        // Total global (réservations + pub estimé)
+        Map<Long, BigDecimal> totalRevenues = vols.stream()
+                .collect(Collectors.toMap(
+                    Vol::getId, 
+                    vol -> volService.calculateReservationRevenue(vol)
+                            .add(volService.calculateEstimatedPubRevenueForVol(vol))
+                ));
+        
+        // Calcul des totaux globaux pour le résumé
+        BigDecimal totalRevenusReservations = revenusReservations.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPubEstimated = pubEstimatedRevenues.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPubPaid = pubPaidRevenues.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalPubRemaining = pubRemainingRevenues.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal grandTotal = totalRevenues.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
         model.addAttribute("vols", vols);
-        model.addAttribute("maxRevenues", maxRevenues);
-        // The template 'vols/list' now uses Nav.html as layout
+        model.addAttribute("revenusReservations", revenusReservations);
+        model.addAttribute("pubEstimatedRevenues", pubEstimatedRevenues);
+        model.addAttribute("pubPaidRevenues", pubPaidRevenues);
+        model.addAttribute("pubRemainingRevenues", pubRemainingRevenues);
+        model.addAttribute("totalRevenues", totalRevenues);
+        
+        // Filtres
+        model.addAttribute("dateDebut", dateDebut);
+        model.addAttribute("dateFin", dateFin);
+        
+        // Totaux globaux
+        model.addAttribute("totalRevenusReservations", totalRevenusReservations);
+        model.addAttribute("totalPubEstimated", totalPubEstimated);
+        model.addAttribute("totalPubPaid", totalPubPaid);
+        model.addAttribute("totalPubRemaining", totalPubRemaining);
+        model.addAttribute("grandTotal", grandTotal);
+        
         return "vols/list";
     }
 

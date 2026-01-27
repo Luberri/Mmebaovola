@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{Nav :: head(title='Paiement par Société')}"></head>
+<body>
+    <nav th:replace="~{Nav :: navbar}"></nav>
+    
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-building"></i> Paiement par Société</h1>
+            <a th:href="@{/paiements-pub}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+
+        <!-- Affichage des erreurs -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="row">
+            <!-- Sélection de la société -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-building"></i> Sélectionner une société</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/paiements-pub/new-by-societe}" method="get">
+                            <div class="mb-3">
+                                <label for="societeId" class="form-label">Société</label>
+                                <select class="form-select" id="societeId" name="societeId" 
+                                        onchange="this.form.submit()">
+                                    <option value="">-- Sélectionner --</option>
+                                    <option th:each="s : ${societes}" 
+                                            th:value="${s.id}" 
+                                            th:text="${s.nom}"
+                                            th:selected="${selectedSociete != null and selectedSociete.id == s.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Détails et formulaire de paiement -->
+            <div class="col-md-8" th:if="${selectedSociete != null}">
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Résumé pour <span th:text="${selectedSociete.nom}"></span></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <h6>Total Dû</h6>
+                                <h4 class="text-primary" th:text="${#numbers.formatDecimal(totalDu, 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></h4>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Total Payé</h6>
+                                <h4 class="text-success" th:text="${#numbers.formatDecimal(totalPaye, 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></h4>
+                            </div>
+                            <div class="col-md-4">
+                                <h6>Reste à Payer</h6>
+                                <h4 class="text-danger" th:text="${#numbers.formatDecimal(resteAPayer, 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Liste des diffusions -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-list"></i> Diffusions de cette société</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Vol</th>
+                                        <th>Contrat</th>
+                                        <th>Nbr Diffusions</th>
+                                        <th>Montant Dû</th>
+                                        <th>Reste à Payer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="diffusion : ${diffusions}">
+                                        <td th:text="${diffusion.vol?.numeroVol}"></td>
+                                        <td th:text="${diffusion.pubContrat?.description}"></td>
+                                        <td th:text="${diffusion.nbrDiffusion}"></td>
+                                        <td>
+                                            <span th:text="${#numbers.formatDecimal(montantsParDiffusion[diffusion.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                        </td>
+                                        <td>
+                                            <span th:class="${restesParDiffusion[diffusion.id] > 0 ? 'text-danger' : 'text-success'}"
+                                                  th:text="${#numbers.formatDecimal(restesParDiffusion[diffusion.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(diffusions)}">
+                                        <td colspan="5" class="text-center text-muted">Aucune diffusion trouvée</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulaire de paiement -->
+                <div class="card" th:if="${resteAPayer > 0}">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-cash"></i> Effectuer un paiement</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/paiements-pub/pay-by-societe}" method="post">
+                            <input type="hidden" name="societeId" th:value="${selectedSociete.id}">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="montant" class="form-label">Montant à payer (Ar)</label>
+                                    <input type="number" step="0.01" class="form-control" id="montant" 
+                                           name="montant" required min="0.01" 
+                                           th:max="${resteAPayer}"
+                                           placeholder="Montant du paiement">
+                                    <small class="text-muted">
+                                        Maximum: <span th:text="${#numbers.formatDecimal(resteAPayer, 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                    </small>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="description" class="form-label">Description (optionnel)</label>
+                                    <input type="text" class="form-control" id="description" name="description"
+                                           placeholder="Ex: Paiement partiel janvier 2024">
+                                </div>
+                            </div>
+
+                            <!-- Prévisualisation de la répartition -->
+                            <div class="alert alert-info" id="previewAlert" style="display: none;">
+                                <h6><i class="bi bi-calculator"></i> Prévisualisation de la répartition :</h6>
+                                <div id="previewContent"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Valider le paiement
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="alert alert-success" th:if="${resteAPayer <= 0}">
+                    <i class="bi bi-check-circle-fill"></i> Tous les paiements sont complets pour cette société !
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{Nav :: footer}"></footer>
+    <div th:replace="~{Nav :: scripts}"></div>
+    
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const diffusions = /*[[${diffusions}]]*/ [];
+        const restesParDiffusion = /*[[${restesParDiffusion}]]*/ {};
+        const totalReste = /*[[${resteAPayer}]]*/ 0;
+        
+        document.getElementById('montant')?.addEventListener('input', function() {
+            const montant = parseFloat(this.value) || 0;
+            const previewAlert = document.getElementById('previewAlert');
+            const previewContent = document.getElementById('previewContent');
+            
+            if (montant > 0 && totalReste > 0) {
+                const pourcentage = (montant / totalReste * 100).toFixed(2);
+                let html = `<p><strong>Pourcentage appliqué : ${pourcentage}%</strong></p><ul>`;
+                
+                diffusions.forEach(diff => {
+                    const reste = restesParDiffusion[diff.id] || 0;
+                    if (reste > 0) {
+                        const montantDiff = (reste * montant / totalReste).toFixed(2);
+                        html += `<li>Vol ${diff.vol?.numeroVol || 'N/A'} : ${montantDiff} Ar</li>`;
+                    }
+                });
+                
+                html += '</ul>';
+                previewContent.innerHTML = html;
+                previewAlert.style.display = 'block';
+            } else {
+                previewAlert.style.display = 'none';
+            }
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>

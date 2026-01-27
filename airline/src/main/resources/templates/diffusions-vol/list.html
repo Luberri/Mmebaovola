@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffusions Vol</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h1 class="mb-4"><i class="bi bi-broadcast"></i> Diffusions par Vol</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <a th:href="@{/diffusions-vol/new}" class="btn btn-primary">
+                <i class="bi bi-plus"></i> Nouvelle Diffusion
+            </a>
+        </div>
+    </div>
+    
+    <!-- Formulaire de calcul du chiffre d'affaires -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <i class="bi bi-calculator"></i> Calculer le Chiffre d'Affaires Publicitaire
+        </div>
+        <div class="card-body">
+            <form th:action="@{/diffusions-vol}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="dateDebut" class="form-label">Date Début</label>
+                    <input type="date" class="form-control" id="dateDebut" name="dateDebut" 
+                           th:value="${dateDebut}">
+                </div>
+                <div class="col-md-4">
+                    <label for="dateFin" class="form-label">Date Fin</label>
+                    <input type="date" class="form-control" id="dateFin" name="dateFin" 
+                           th:value="${dateFin}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-info me-2">
+                        <i class="bi bi-search"></i> Calculer
+                    </button>
+                    <a th:href="@{/diffusions-vol}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Réinitialiser
+                    </a>
+                </div>
+            </form>
+            
+            <!-- Affichage du chiffre d'affaires -->
+            <div th:if="${chiffreAffaires != null}" class="alert alert-success mt-3">
+                <h4 class="alert-heading">
+                    <i class="bi bi-cash-stack"></i> Chiffre d'Affaires Publicitaire
+                </h4>
+                <p class="mb-0">
+                    Période du <strong th:text="${#temporals.format(dateDebut, 'dd/MM/yyyy')}"></strong> 
+                    au <strong th:text="${#temporals.format(dateFin, 'dd/MM/yyyy')}"></strong>
+                </p>
+                <hr>
+                <h2 class="mb-0">
+                    <span th:text="${#numbers.formatDecimal(chiffreAffaires, 0, 2)}"></span> Ar
+                </h2>
+            </div>
+        </div>
+    </div>
+    
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Contrat Publicitaire</th>
+                <th>Vol</th>
+                <th>Nbr Diffusions</th>
+                <th>Prix Unitaire</th>
+                <th>Montant</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="diffusion : ${diffusions}">
+                <td th:text="${diffusion.id}"></td>
+                <td th:text="${diffusion.pubContrat?.societe?.nom + ' - ' + diffusion.pubContrat?.description}"></td>
+                <td th:text="${diffusion.vol?.numeroVol}"></td>
+                <td><span class="badge bg-info" th:text="${diffusion.nbrDiffusion}"></span></td>
+                <td th:text="${diffusion.pubContrat?.configurationPrix != null ? #numbers.formatDecimal(diffusion.pubContrat.configurationPrix.prix, 0, 2) + ' Ar' : '-'}"></td>
+                <td>
+                    <span class="badge bg-success" 
+                          th:if="${diffusion.pubContrat?.configurationPrix != null && diffusion.nbrDiffusion != null}"
+                          th:text="${#numbers.formatDecimal(diffusion.pubContrat.configurationPrix.prix * diffusion.nbrDiffusion, 0, 2) + ' Ar'}"></span>
+                    <span th:unless="${diffusion.pubContrat?.configurationPrix != null && diffusion.nbrDiffusion != null}">-</span>
+                </td>
+                <td>
+                    <a th:href="@{/diffusions-vol/edit/{id}(id=${diffusion.id})}" 
+                       class="btn btn-sm btn-warning">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                    <a th:href="@{/diffusions-vol/delete/{id}(id=${diffusion.id})}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette diffusion ?')">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(diffusions)}">
+                <td colspan="7" class="text-center">Aucune diffusion trouvée</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

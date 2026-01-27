@@ -103,6 +103,23 @@
                         <li><a class="dropdown-item" th:href="@{/utilisateurs}"><i class="bi bi-person-lock"></i> Utilisateurs</a></li>
                     </ul>
                 </li>
+                
+                <!-- Publicité -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-megaphone"></i> Publicité
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/pub-contrats}"><i class="bi bi-file-text"></i> Contrats</a></li>
+                        <li><a class="dropdown-item" th:href="@{/diffusions-vol}"><i class="bi bi-broadcast"></i> Diffusions</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/paiements-pub}"><i class="bi bi-cash-stack"></i> Paiements Pub</a></li>
+                        <li><a class="dropdown-item" th:href="@{/paiements-pub/new-by-societe}"><i class="bi bi-building"></i> Payer par Société</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/societes}"><i class="bi bi-building"></i> Sociétés</a></li>
+                        <li><a class="dropdown-item" th:href="@{/configurations-prix}"><i class="bi bi-currency-exchange"></i> Configurations Prix</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

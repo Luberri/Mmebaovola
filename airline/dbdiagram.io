@@ -51,8 +51,10 @@ Table tarif_vol_classe_type {
   id bigint [pk, increment]
   prix decimal
   type varchar
+  pourcentage decimal
   id_vol bigint [ref: > vol.id]
   id_classe bigint [ref: > classe_voyage.id]
+  id_reference bigint [ref: > tarif_vol_classe_type.id]
 }
 
 Table passager {
@@ -66,13 +68,18 @@ Table passager {
 
 Table reservation {
   id bigint [pk, increment]
-  numero_siege varchar
   date_reservation datetime
   statut varchar
   id_passager bigint [ref: > passager.id]
   id_vol bigint [ref: > vol.id]
   id_classe bigint [ref: > classe_voyage.id]
   id_type_vol_classe bigint [ref: > tarif_vol_classe_type.id]
+}
+
+Table reservation_siege {
+  id bigint [pk, increment]
+  num_siege varchar
+  id_reservation bigint [ref: > reservation.id]
 }
 
 Table paiement {
@@ -82,4 +89,76 @@ Table paiement {
   date_paiement datetime
   statut varchar
   id_reservation bigint [ref: > reservation.id]
+}
+
+Table employe {
+  id bigint [pk, increment]
+  nom varchar
+  prenom varchar
+  email varchar
+  telephone varchar
+  date_embauche date
+  statut varchar
+  id_compagnie bigint [ref: > compagnie_aerienne.id]
+}
+
+Table poste {
+  id bigint [pk, increment]
+  libelle varchar
+}
+
+Table employe_poste {
+  id bigint [pk, increment]
+  id_employe bigint [ref: > employe.id]
+  id_poste bigint [ref: > poste.id]
+}
+
+Table affectation_vol {
+  id bigint [pk, increment]
+  role_vol varchar
+  id_vol bigint [ref: > vol.id]
+  id_employe bigint [ref: > employe.id]
+}
+
+Table utilisateur {
+  id bigint [pk, increment]
+  nom varchar
+  mot_de_passe varchar
+  role_systeme varchar
+  id_employe bigint [ref: > employe.id]
+}
+
+Table societe {
+  id bigint [pk, increment]
+  nom varchar
+}
+
+Table configuration_prix {
+  id bigint [pk, increment]
+  prix decimal
+}
+
+Table pub_contrat {
+  id bigint [pk, increment]
+  date_debut date
+  date_fin date
+  description varchar
+  nbr_diffusion int
+  id_societe bigint [ref: > societe.id]
+  id_configuration_prix bigint [ref: > configuration_prix.id]
+}
+
+Table diffusion_vol {
+  id bigint [pk, increment]
+  nbr_diffusion int
+  id_pub_contrat bigint [ref: > pub_contrat.id]
+  id_vol bigint [ref: > vol.id]
+}
+
+Table paiement_pub {
+  id bigint [pk, increment]
+  montant decimal
+  date_paiement datetime
+  description varchar
+  id_diffusion_vol bigint [ref: > diffusion_vol.id]
 }

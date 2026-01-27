@@ -5,12 +5,102 @@
 <body>
     <nav th:replace="~{Nav :: navbar}"></nav>
     
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="bi bi-airplane-engines"></i> Liste des vols</h1>
             <a th:href="@{/vols/new}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nouveau vol
             </a>
+        </div>
+
+        <!-- Filtre par date -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtrer par date de départ</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/vols}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="dateDebut" class="form-label">Date début</label>
+                        <input type="date" class="form-control" id="dateDebut" name="dateDebut" 
+                               th:value="${dateDebut}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dateFin" class="form-label">Date fin</label>
+                        <input type="date" class="form-control" id="dateFin" name="dateFin" 
+                               th:value="${dateFin}">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Filtrer
+                         </button>
+                        <a th:href="@{/vols}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Réinitialiser
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Résumé des totaux -->
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center py-2">
+                        <small>Revenus Billets</small>
+                        <h5 class="mb-0" th:text="${#numbers.formatDecimal(totalRevenusReservations, 1, 'WHITESPACE', 0, 'COMMA') + ' Ar'}"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center py-2">
+                        <small>Pub Estimé</small>
+                        <h5 class="mb-0" th:text="${#numbers.formatDecimal(totalPubEstimated, 1, 'WHITESPACE', 0, 'COMMA') + ' Ar'}"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center py-2">
+                        <small>Pub Payé</small>
+                        <h5 class="mb-0" th:text="${#numbers.formatDecimal(totalPubPaid, 1, 'WHITESPACE', 0, 'COMMA') + ' Ar'}"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center py-2">
+                        <small>Pub Reste</small>
+                        <h5 class="mb-0" th:text="${#numbers.formatDecimal(totalPubRemaining, 1, 'WHITESPACE', 0, 'COMMA') + ' Ar'}"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-dark text-white">
+                    <div class="card-body text-center py-2">
+                        <small>Total Général</small>
+                        <h5 class="mb-0" th:text="${#numbers.formatDecimal(grandTotal, 1, 'WHITESPACE', 0, 'COMMA') + ' Ar'}"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body text-center py-2">
+                        <small>Nb Vols</small>
+                        <h5 class="mb-0" th:text="${#lists.size(vols)}"></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badge période sélectionnée -->
+        <div th:if="${dateDebut != null or dateFin != null}" class="alert alert-info">
+            <i class="bi bi-calendar-range"></i> 
+            Affichage des vols 
+            <span th:if="${dateDebut != null}">à partir du <strong th:text="${#temporals.format(dateDebut, 'dd/MM/yyyy')}"></strong></span>
+            <span th:if="${dateDebut != null and dateFin != null}"> jusqu'au </span>
+            <span th:if="${dateFin != null}"><span th:if="${dateDebut == null}">jusqu'au </span><strong th:text="${#temporals.format(dateFin, 'dd/MM/yyyy')}"></strong></span>
         </div>
 
         <div class="card">
@@ -25,8 +115,11 @@
                                 <th>Départ</th>
                                 <th>Arrivée</th>
                                 <th>Date départ</th>
-                                <th>Date arrivée</th>
-                                <th>Revenu Max (€)</th> <!-- Nouvelle colonne -->
+                                <th>Revenus Billets</th>
+                                <th>Pub Estimé</th>
+                                <th>Pub Payé</th>
+                                <th>Pub Reste</th>
+                                <th>Total</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -38,27 +131,47 @@
                                 <td th:text="${vol.aeroportDepart?.nom}"></td>
                                 <td th:text="${vol.aeroportArrivee?.nom}"></td>
                                 <td th:text="${#temporals.format(vol.dateHeureDepart, 'dd/MM/yyyy HH:mm')}"></td>
-                                <td th:text="${#temporals.format(vol.dateHeureArrivee, 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
-                                    <span th:if="${maxRevenues[vol.id] != null}" th:text="${maxRevenues[vol.id]}"></span>
-                                    <span th:if="${maxRevenues[vol.id] == null}">N/A</span> <!-- Affiche "N/A" si la valeur est null -->
+                                    <span class="badge bg-primary" th:if="${revenusReservations[vol.id] != null and revenusReservations[vol.id] > 0}" 
+                                          th:text="${#numbers.formatDecimal(revenusReservations[vol.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                    <span class="text-muted" th:if="${revenusReservations[vol.id] == null or revenusReservations[vol.id] == 0}">-</span>
                                 </td>
                                 <td>
-                                    <a th:href="@{/vols/{id}/revenue(id=${vol.id})}" class="btn btn-sm btn-info">
-                                        <i class="bi bi-cash-stack"></i> CA Max
+                                    <span class="badge bg-info" th:if="${pubEstimatedRevenues[vol.id] != null and pubEstimatedRevenues[vol.id] > 0}" 
+                                          th:text="${#numbers.formatDecimal(pubEstimatedRevenues[vol.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                    <span class="text-muted" th:if="${pubEstimatedRevenues[vol.id] == null or pubEstimatedRevenues[vol.id] == 0}">-</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success" th:if="${pubPaidRevenues[vol.id] != null and pubPaidRevenues[vol.id] > 0}" 
+                                          th:text="${#numbers.formatDecimal(pubPaidRevenues[vol.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                    <span class="text-muted" th:if="${pubPaidRevenues[vol.id] == null or pubPaidRevenues[vol.id] == 0}">-</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger" th:if="${pubRemainingRevenues[vol.id] != null and pubRemainingRevenues[vol.id] > 0}" 
+                                          th:text="${#numbers.formatDecimal(pubRemainingRevenues[vol.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                    <span class="text-muted" th:if="${pubRemainingRevenues[vol.id] == null or pubRemainingRevenues[vol.id] == 0}">-</span>
+                                </td>
+                                <td>
+                                    <strong class="text-success" th:if="${totalRevenues[vol.id] != null and totalRevenues[vol.id] > 0}" 
+                                            th:text="${#numbers.formatDecimal(totalRevenues[vol.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></strong>
+                                    <span class="text-muted" th:if="${totalRevenues[vol.id] == null or totalRevenues[vol.id] == 0}">-</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/vols/{id}/revenue(id=${vol.id})}" class="btn btn-sm btn-info" title="Détails revenus">
+                                        <i class="bi bi-cash-stack"></i>
                                     </a>
-                                    <a th:href="@{/vols/edit/{id}(id=${vol.id})}" class="btn btn-sm btn-warning">
-                                        <i class="bi bi-pencil"></i> Modifier
+                                    <a th:href="@{/vols/edit/{id}(id=${vol.id})}" class="btn btn-sm btn-warning" title="Modifier">
+                                        <i class="bi bi-pencil"></i>
                                     </a>
                                     <a th:href="@{/vols/delete/{id}(id=${vol.id})}" 
                                        class="btn btn-sm btn-danger"
-                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce vol ?')">
-                                        <i class="bi bi-trash"></i> Supprimer
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce vol ?')" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
                                     </a>
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(vols)}">
-                                <td colspan="9" class="text-center text-muted">
+                                <td colspan="12" class="text-center text-muted">
                                     <i class="bi bi-inbox"></i> Aucun vol trouvé
                                 </td>
                             </tr>
