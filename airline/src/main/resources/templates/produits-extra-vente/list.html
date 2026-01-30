@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventes Produits Extra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-cart-check"></i> Ventes Produits Extra</h1>
+        <a th:href="@{/produits-extra-vente/create}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nouvelle Vente
+        </a>
+    </div>
+
+    <!-- Message de succès -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Tableau des ventes -->
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Produit</th>
+                        <th>Vol</th>
+                        <th>Quantité</th>
+                        <th>Montant Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="vente : ${ventes}">
+                        <td th:text="${vente.id}"></td>
+                        <td th:text="${vente.produit?.produit}"></td>
+                        <td th:text="${vente.vol?.numeroVol}"></td>
+                        <td th:text="${vente.quantite}"></td>
+                        <td th:text="${#numbers.formatDecimal(montants[vente.id], 0, 'COMMA', 2, 'POINT')} + ' Ar'"></td>
+                        <td>
+                            <a th:href="@{/produits-extra-vente/view/{id}(id=${vente.id})}" 
+                               class="btn btn-info btn-sm" title="Voir">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a th:href="@{/produits-extra-vente/edit/{id}(id=${vente.id})}" 
+                               class="btn btn-warning btn-sm" title="Modifier">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a th:href="@{/produits-extra-vente/delete/{id}(id=${vente.id})}" 
+                               class="btn btn-danger btn-sm" 
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette vente?')"
+                               title="Supprimer">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(ventes)}">
+                        <td colspan="6" class="text-center text-muted">Aucune vente trouvée</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

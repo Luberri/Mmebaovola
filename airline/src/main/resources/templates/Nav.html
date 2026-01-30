@@ -120,6 +120,20 @@
                         <li><a class="dropdown-item" th:href="@{/configurations-prix}"><i class="bi bi-currency-exchange"></i> Configurations Prix</a></li>
                     </ul>
                 </li>
+                
+                <!-- Produits Extra -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-box-seam"></i> Produits Extra
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/produits-extra}"><i class="bi bi-list"></i> Liste des produits</a></li>
+                        <li><a class="dropdown-item" th:href="@{/produits-extra/create}"><i class="bi bi-plus-circle"></i> Nouveau produit</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/produits-extra-vente}"><i class="bi bi-cart-check"></i> Ventes</a></li>
+                        <li><a class="dropdown-item" th:href="@{/produits-extra-vente/create}"><i class="bi bi-cart-plus"></i> Nouvelle vente</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
@@ -129,6 +143,7 @@
     <div class="container">
         <p class="mb-0">&copy; 2024 Airline Manager - Tous droits réservés</p>
     </div>
+    
 </footer>
 
 <div th:fragment="scripts">

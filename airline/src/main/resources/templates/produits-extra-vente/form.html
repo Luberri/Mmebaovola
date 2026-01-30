@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${vente.id != null} ? 'Modifier Vente' : 'Nouvelle Vente'">Vente Produit Extra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-cart-check"></i>
+                        <span th:text="${vente.id != null} ? 'Modifier Vente' : 'Nouvelle Vente'"></span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="${vente.id != null} ? @{/produits-extra-vente/edit/{id}(id=${vente.id})} : @{/produits-extra-vente/create}" 
+                          th:object="${vente}" method="post">
+                        
+                        <div class="mb-3">
+                            <label for="produitId" class="form-label">Produit Extra</label>
+                            <select class="form-select" id="produitId" name="produitId" required>
+                                <option value="">-- Sélectionner un produit --</option>
+                                <option th:each="produit : ${produits}" 
+                                        th:value="${produit.id}" 
+                                        th:text="${produit.produit + ' - ' + #numbers.formatDecimal(produit.prix, 0, 'COMMA', 2, 'POINT') + ' Ar'}"
+                                        th:selected="${vente.produit != null && vente.produit.id == produit.id}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="volId" class="form-label">Vol</label>
+                            <select class="form-select" id="volId" name="volId" required>
+                                <option value="">-- Sélectionner un vol --</option>
+                                <option th:each="vol : ${vols}" 
+                                        th:value="${vol.id}" 
+                                        th:text="${vol.numeroVol + ' - ' + #temporals.format(vol.dateHeureDepart, 'dd/MM/yyyy HH:mm')}"
+                                        th:selected="${vente.vol != null && vente.vol.id == vol.id}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="quantite" class="form-label">Quantité</label>
+                            <input type="number" min="1" class="form-control" id="quantite" 
+                                   th:field="*{quantite}" required>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Enregistrer
+                            </button>
+                            <a th:href="@{/produits-extra-vente}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Retour
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

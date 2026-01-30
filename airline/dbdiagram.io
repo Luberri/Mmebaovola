@@ -125,7 +125,7 @@ Table utilisateur {
   nom varchar
   mot_de_passe varchar
   role_systeme varchar
-  id_employe bigint [ref: > employe.id]
+  id_employe bigint [ref: > employe.id, null]
 }
 
 Table societe {
@@ -138,7 +138,7 @@ Table configuration_prix {
   prix decimal
 }
 
-Table pub_contrat {
+Table pub_contrat_facture {
   id bigint [pk, increment]
   date_debut date
   date_fin date
@@ -148,10 +148,10 @@ Table pub_contrat {
   id_configuration_prix bigint [ref: > configuration_prix.id]
 }
 
-Table diffusion_vol {
+Table diffusion_vol_facture {
   id bigint [pk, increment]
   nbr_diffusion int
-  id_pub_contrat bigint [ref: > pub_contrat.id]
+  id_pub_contrat bigint [ref: > pub_contrat_facture.id]
   id_vol bigint [ref: > vol.id]
 }
 
@@ -160,5 +160,5 @@ Table paiement_pub {
   montant decimal
   date_paiement datetime
   description varchar
-  id_diffusion_vol bigint [ref: > diffusion_vol.id]
+  id_diffusion_vol bigint [ref: > diffusion_vol_facture.id]
 }

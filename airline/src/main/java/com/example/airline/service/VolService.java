@@ -2,6 +2,7 @@ package com.example.airline.service;
 
 import com.example.airline.model.CapaciteAvionClasse;
 import com.example.airline.model.DiffusionVol;
+import com.example.airline.model.ProduitExtraVente;
 import com.example.airline.model.Reservation;
 import com.example.airline.model.TarifVolClasseType;
 import com.example.airline.model.Vol;
@@ -22,19 +23,22 @@ public class VolService {
     private final ReservationService reservationService;
     private final DiffusionVolService diffusionVolService;
     private final PaiementPubService paiementPubService;
+    private final ProduitExtraVenteService produitExtraVenteService;
 
     public VolService(VolRepository volRepository, 
                       CapaciteAvionClasseService capaciteAvionClasseService,
                       TarifVolClasseTypeService tarifVolClasseTypeService,
                       ReservationService reservationService,
                       DiffusionVolService diffusionVolService,
-                      PaiementPubService paiementPubService) {
+                      PaiementPubService paiementPubService,
+                      ProduitExtraVenteService produitExtraVenteService) {
         this.volRepository = volRepository;
         this.capaciteAvionClasseService = capaciteAvionClasseService;
         this.tarifVolClasseTypeService = tarifVolClasseTypeService;
         this.reservationService = reservationService;
         this.diffusionVolService = diffusionVolService;
         this.paiementPubService = paiementPubService;
+        this.produitExtraVenteService = produitExtraVenteService;
     }
 
     public List<Vol> findAll() {
@@ -178,6 +182,20 @@ public class VolService {
                 total = total.add(reservation.getTarifVolClasseType().getPrix()
                         .multiply(BigDecimal.valueOf(nbSieges)));
             }
+        }
+        
+        return total;
+    }
+
+    /**
+     * Calcule le revenu total des produits extra vendus pour un vol
+     */
+    public BigDecimal calculateProduitExtraRevenueForVol(Vol vol) {
+        List<ProduitExtraVente> ventes = produitExtraVenteService.findByVol(vol);
+        BigDecimal total = BigDecimal.ZERO;
+        
+        for (ProduitExtraVente vente : ventes) {
+            total = total.add(produitExtraVenteService.calculerMontantVente(vente));
         }
         
         return total;

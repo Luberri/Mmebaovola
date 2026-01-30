@@ -53,6 +53,14 @@
                 </div>
             </div>
             <div class="col-md-2">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center py-2">
+                        <small>Produits Extra</small>
+                        <h5 class="mb-0" th:text="${#numbers.formatDecimal(totalProduitExtra, 1, 'WHITESPACE', 0, 'COMMA') + ' Ar'}"></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
                 <div class="card bg-info text-white">
                     <div class="card-body text-center py-2">
                         <small>Pub Estimé</small>
@@ -84,14 +92,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2">
-                <div class="card bg-secondary text-white">
-                    <div class="card-body text-center py-2">
-                        <small>Nb Vols</small>
-                        <h5 class="mb-0" th:text="${#lists.size(vols)}"></h5>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Badge période sélectionnée -->
@@ -116,6 +116,7 @@
                                 <th>Arrivée</th>
                                 <th>Date départ</th>
                                 <th>Revenus Billets</th>
+                                <th>Produits Extra</th>
                                 <th>Pub Estimé</th>
                                 <th>Pub Payé</th>
                                 <th>Pub Reste</th>
@@ -135,6 +136,11 @@
                                     <span class="badge bg-primary" th:if="${revenusReservations[vol.id] != null and revenusReservations[vol.id] > 0}" 
                                           th:text="${#numbers.formatDecimal(revenusReservations[vol.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
                                     <span class="text-muted" th:if="${revenusReservations[vol.id] == null or revenusReservations[vol.id] == 0}">-</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark" th:if="${produitExtraRevenues[vol.id] != null and produitExtraRevenues[vol.id] > 0}" 
+                                          th:text="${#numbers.formatDecimal(produitExtraRevenues[vol.id], 1, 'WHITESPACE', 2, 'COMMA') + ' Ar'}"></span>
+                                    <span class="text-muted" th:if="${produitExtraRevenues[vol.id] == null or produitExtraRevenues[vol.id] == 0}">-</span>
                                 </td>
                                 <td>
                                     <span class="badge bg-info" th:if="${pubEstimatedRevenues[vol.id] != null and pubEstimatedRevenues[vol.id] > 0}" 
@@ -171,7 +177,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(vols)}">
-                                <td colspan="12" class="text-center text-muted">
+                                <td colspan="13" class="text-center text-muted">
                                     <i class="bi bi-inbox"></i> Aucun vol trouvé
                                 </td>
                             </tr>

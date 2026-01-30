@@ -33,80 +33,89 @@ public class VolController {
 
     @GetMapping
     public String list(Model model,
-                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
-                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin) {
-        
-        List<Vol> vols;
-        
-        // Filtrer par date si les paramètres sont fournis
-        if (dateDebut != null && dateFin != null) {
-            vols = volService.findByDateRange(dateDebut, dateFin);
-        } else if (dateDebut != null) {
-            vols = volService.findByDateFrom(dateDebut);
-        } else if (dateFin != null) {
-            vols = volService.findByDateTo(dateFin);
-        } else {
-            vols = volService.findAll();
-        }
-        
-        // Total généré par les réservations (billets vendus)
-        Map<Long, BigDecimal> revenusReservations = vols.stream()
-                .collect(Collectors.toMap(Vol::getId, volService::calculateReservationRevenue));
-        
-        // Montants estimés des diffusions pub (nbrDiffusion * prix unitaire)
-        Map<Long, BigDecimal> pubEstimatedRevenues = vols.stream()
-                .collect(Collectors.toMap(Vol::getId, volService::calculateEstimatedPubRevenueForVol));
-        
-        // Montants déjà payés pour les diffusions pub
-        Map<Long, BigDecimal> pubPaidRevenues = vols.stream()
-                .collect(Collectors.toMap(Vol::getId, volService::calculateActualPubRevenueForVol));
-        
-        // Reste à payer pour les diffusions pub
-        Map<Long, BigDecimal> pubRemainingRevenues = vols.stream()
-                .collect(Collectors.toMap(Vol::getId, volService::calculateRemainingPubRevenueForVol));
-        
-        // Total global (réservations + pub estimé)
-        Map<Long, BigDecimal> totalRevenues = vols.stream()
-                .collect(Collectors.toMap(
-                    Vol::getId, 
-                    vol -> volService.calculateReservationRevenue(vol)
-                            .add(volService.calculateEstimatedPubRevenueForVol(vol))
-                ));
-        
-        // Calcul des totaux globaux pour le résumé
-        BigDecimal totalRevenusReservations = revenusReservations.values().stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalPubEstimated = pubEstimatedRevenues.values().stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalPubPaid = pubPaidRevenues.values().stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalPubRemaining = pubRemainingRevenues.values().stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal grandTotal = totalRevenues.values().stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        
-        model.addAttribute("vols", vols);
-        model.addAttribute("revenusReservations", revenusReservations);
-        model.addAttribute("pubEstimatedRevenues", pubEstimatedRevenues);
-        model.addAttribute("pubPaidRevenues", pubPaidRevenues);
-        model.addAttribute("pubRemainingRevenues", pubRemainingRevenues);
-        model.addAttribute("totalRevenues", totalRevenues);
-        
-        // Filtres
-        model.addAttribute("dateDebut", dateDebut);
-        model.addAttribute("dateFin", dateFin);
-        
-        // Totaux globaux
-        model.addAttribute("totalRevenusReservations", totalRevenusReservations);
-        model.addAttribute("totalPubEstimated", totalPubEstimated);
-        model.addAttribute("totalPubPaid", totalPubPaid);
-        model.addAttribute("totalPubRemaining", totalPubRemaining);
-        model.addAttribute("grandTotal", grandTotal);
-        
-        return "vols/list";
+                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateDebut,
+                   @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFin) {
+    
+    List<Vol> vols;
+    
+    // Filtrer par date si les paramètres sont fournis
+    if (dateDebut != null && dateFin != null) {
+        vols = volService.findByDateRange(dateDebut, dateFin);
+    } else if (dateDebut != null) {
+        vols = volService.findByDateFrom(dateDebut);
+    } else if (dateFin != null) {
+        vols = volService.findByDateTo(dateFin);
+    } else {
+        vols = volService.findAll();
     }
+    
+    // Total généré par les réservations (billets vendus)
+    Map<Long, BigDecimal> revenusReservations = vols.stream()
+            .collect(Collectors.toMap(Vol::getId, volService::calculateReservationRevenue));
+    
+    // Total des produits extra vendus
+    Map<Long, BigDecimal> produitExtraRevenues = vols.stream()
+            .collect(Collectors.toMap(Vol::getId, volService::calculateProduitExtraRevenueForVol));
+    
+    // Montants estimés des diffusions pub (nbrDiffusion * prix unitaire)
+    Map<Long, BigDecimal> pubEstimatedRevenues = vols.stream()
+            .collect(Collectors.toMap(Vol::getId, volService::calculateEstimatedPubRevenueForVol));
+    
+    // Montants déjà payés pour les diffusions pub
+    Map<Long, BigDecimal> pubPaidRevenues = vols.stream()
+            .collect(Collectors.toMap(Vol::getId, volService::calculateActualPubRevenueForVol));
+    
+    // Reste à payer pour les diffusions pub
+    Map<Long, BigDecimal> pubRemainingRevenues = vols.stream()
+            .collect(Collectors.toMap(Vol::getId, volService::calculateRemainingPubRevenueForVol));
+    
+    // Total global (réservations + produits extra + pub estimé)
+    Map<Long, BigDecimal> totalRevenues = vols.stream()
+            .collect(Collectors.toMap(
+                Vol::getId, 
+                vol -> volService.calculateReservationRevenue(vol)
+                        .add(volService.calculateProduitExtraRevenueForVol(vol))
+                        .add(volService.calculateEstimatedPubRevenueForVol(vol))
+            ));
+    
+    // Calcul des totaux globaux pour le résumé
+    BigDecimal totalRevenusReservations = revenusReservations.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalProduitExtra = produitExtraRevenues.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalPubEstimated = pubEstimatedRevenues.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalPubPaid = pubPaidRevenues.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalPubRemaining = pubRemainingRevenues.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal grandTotal = totalRevenues.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    
+    model.addAttribute("vols", vols);
+    model.addAttribute("revenusReservations", revenusReservations);
+    model.addAttribute("produitExtraRevenues", produitExtraRevenues);
+    model.addAttribute("pubEstimatedRevenues", pubEstimatedRevenues);
+    model.addAttribute("pubPaidRevenues", pubPaidRevenues);
+    model.addAttribute("pubRemainingRevenues", pubRemainingRevenues);
+    model.addAttribute("totalRevenues", totalRevenues);
+    
+    // Filtres
+    model.addAttribute("dateDebut", dateDebut);
+    model.addAttribute("dateFin", dateFin);
+    
+    // Totaux globaux
+    model.addAttribute("totalRevenusReservations", totalRevenusReservations);
+    model.addAttribute("totalProduitExtra", totalProduitExtra);
+    model.addAttribute("totalPubEstimated", totalPubEstimated);
+    model.addAttribute("totalPubPaid", totalPubPaid);
+    model.addAttribute("totalPubRemaining", totalPubRemaining);
+    model.addAttribute("grandTotal", grandTotal);
+    
+    return "vols/list";
+}
 
-    @GetMapping("/new")
+@GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("vol", new Vol());
         model.addAttribute("compagnies", compagnieService.findAll());
